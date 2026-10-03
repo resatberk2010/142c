@@ -197,7 +197,9 @@ section.block{padding-block:104px 0}
 .fav .fill{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--viola),var(--viola-hi))}
 .fav .pc{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
 .wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.wc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px;min-width:0}
+.wc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px;min-width:0;width:100%;font:inherit;color:var(--text);text-align:left;cursor:zoom-in;transition:transform .25s,border-color .25s,box-shadow .25s}
+.wc:hover{transform:translateY(-3px);border-color:var(--gold-line);box-shadow:0 18px 36px -16px rgba(110,58,242,.7)}
+.wc .mini,.wc .wc-note{display:block}
 .wc-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
 .wc-h b{font:800 .95rem var(--f-display);font-stretch:112%;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .wc-h span{flex:none;font:600 .62rem var(--f-body);font-stretch:75%;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
@@ -207,6 +209,14 @@ section.block{padding-block:104px 0}
 .md b{width:24px;height:24px;border-radius:50%;background:#FFFFFF;color:#3A12A8;display:grid;place-items:center;font:800 .66rem var(--f-display);font-stretch:110%;box-shadow:0 3px 8px rgba(0,0,0,.45)}
 .md span{font:700 .5rem var(--f-body);font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.8);white-space:nowrap}
 .wc-note{margin:0;font:italic 400 1.05rem/1.3 var(--f-serif);color:var(--muted);overflow-wrap:anywhere}
+.kd-dlg{width:min(560px,calc(100vw - 24px))}
+.kd{position:relative;padding:26px;display:grid;gap:18px}
+.kd h3{font-size:clamp(1.8rem,5vw,2.4rem);margin-top:8px}
+.mini.big{display:block;max-width:440px;margin-inline:auto;border-radius:14px}
+.mini.big .md{gap:4px}
+.mini.big .md b{width:42px;height:42px;font-size:1rem}
+.mini.big .md span{font-size:.64rem;letter-spacing:.12em}
+.kd .wc-note{font-size:1.35rem;text-align:center}
 .wall-state{grid-column:1/-1;padding:32px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line-2);border-radius:16px;display:grid;gap:12px;justify-items:center}
 .wall-more{display:flex;justify-content:center;margin-top:20px}
 
@@ -323,7 +333,7 @@ body:has(dialog[open]){overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .ticker-track,.hero-kit .float,.picking .slot:not(.filled) b,.wc.new,.b-hint.nudge{animation:none}
-  .pcard,.pc-kit,.btn{transition:none}
+  .pcard,.pc-kit,.btn,.wc{transition:none}
 }
 </style>
 
@@ -554,6 +564,23 @@ body:has(dialog[open]){overflow:hidden}
   </div>
 </dialog>
 
+<dialog class="pd-dlg kd-dlg" id="kd" aria-labelledby="kdTitle">
+  <div class="kd">
+    <button type="button" class="pd-x" data-close aria-label="Kapat">×</button>
+    <div>
+      <div class="label" id="kdTime"></div>
+      <h3 class="display" id="kdTitle"></h3>
+    </div>
+    <div class="mini big" id="kdPitch"></div>
+    <p class="wc-note" id="kdNote"></p>
+    <div class="pd-nav">
+      <button type="button" class="btn btn-ghost" id="kdPrev">← Önceki</button>
+      <button type="button" class="btn btn-primary" data-close>Kapat</button>
+      <button type="button" class="btn btn-ghost" id="kdNext">Sonraki →</button>
+    </div>
+  </div>
+</dialog>
+
 <script>
 document.documentElement.lang = 'tr'; // büyük harfte "i" -> "İ" doğru çevrilsin
 
@@ -595,6 +622,11 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 const upper = s => String(s).toLocaleUpperCase('tr-TR');
 // "Reşat Berk Evrens" -> ["Reşat Berk", "Evrens"]
 const splitName = full => { const w = String(full).trim().split(/\s+/); return [w.slice(0, -1).join(' '), w[w.length - 1]]; };
+// "Reşat Berk Evrens" -> "Reşat B. E."  (ilk isim + diğer isimlerin baş harfi)
+const shortName = p => {
+  const w = String(p.adSoyad || p.ad).trim().split(/\s+/);
+  return [w[0], ...w.slice(1).map(x => x.charAt(0).toLocaleUpperCase('tr-TR') + '.')].join(' ');
+};
 
 const LILY_PATHS = `
   <path d="M50 18 C59 30 61 44 54 58 H46 C39 44 41 30 50 18 Z"/>
@@ -871,17 +903,17 @@ function bRender() {
     const p = byNo[bPick[i]];
     const cls = (p ? ' filled' : '') + (p && p.no === bSel ? ' sel' : '');
     return `<button type="button" class="slot${cls}" data-slot="${i}" style="left:${x}%;top:${y}%"
-      aria-label="${LINES[r]}${p ? ': ' + esc(p.ad) : ', boş'}"><b>${p ? p.no : '+'}</b><span>${p ? esc(p.ad) : LINES[r]}</span></button>`;
+      aria-label="${LINES[r]}${p ? ': ' + esc(shortName(p)) : ', boş'}"><b>${p ? p.no : '+'}</b><span>${p ? esc(shortName(p)) : LINES[r]}</span></button>`;
   }).join(''));
   $('#bList').innerHTML = players.map(p => {
     const used = bPick.includes(p.no);
-    return `<button type="button" class="pk${used ? ' used' : ''}" data-pick="${p.no}" aria-pressed="${p.no === bSel}"><i>${p.no}</i>${esc(p.ad)}<small>${used ? 'Sahada' : esc(p.mevki)}</small></button>`;
+    return `<button type="button" class="pk${used ? ' used' : ''}" data-pick="${p.no}" aria-pressed="${p.no === bSel}"><i>${p.no}</i>${esc(shortName(p))}<small>${used ? 'Sahada' : esc(p.mevki)}</small></button>`;
   }).join('');
   const n = filled();
   $('#bCount').textContent = `${n} / 9`;
   const sel = byNo[bSel];
   $('#bHint').textContent = sel
-    ? (bPick.includes(sel.no) ? `${sel.ad} · yeni mevkisine dokun` : `${sel.ad} · bir mevkiye dokun`)
+    ? (bPick.includes(sel.no) ? `${shortName(sel)} · yeni mevkisine dokun` : `${shortName(sel)} · bir mevkiye dokun`)
     : n === 9 ? 'Kadron hazır' : 'Önce bir oyuncu seç';
   $('#bSend').disabled = n !== 9 || bSending || !KADRO_API;
   if (!KADRO_API) setMsg('Gönderim yakında açılacak.');
@@ -1004,16 +1036,19 @@ const fmtTime = t => {
   const d = new Date(t);
   return isNaN(d) ? '' : d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' · ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 };
-function wallCard(k) {
-  const f = FORMATIONS[k.dizilis];
-  const note = String(k.isim || '').trim();
-  const hasNote = note && note !== 'İsimsiz'; // eski kayıtlarda boş not "İsimsiz" olarak saklanıyordu
-  return `<article class="wc">
-    <div class="wc-h"><b>${esc(k.dizilis)}</b><span>${fmtTime(k.t)}</span></div>
-    <div class="mini" role="img" aria-label="${esc(k.dizilis)} kadrosu: ${k.oyuncular.map(n => esc(byNo[n].ad)).join(', ')}">${PITCH_LINES}
-      ${f.map(([, x, y], i) => { const p = byNo[k.oyuncular[i]]; return `<div class="md" style="left:${x}%;top:${y}%"><b>${p.no}</b><span>${esc(p.ad)}</span></div>`; }).join('')}</div>
-    ${hasNote ? `<p class="wc-note">${esc(note)}</p>` : ''}
-  </article>`;
+// eski kayıtlarda boş not "İsimsiz" olarak saklanıyordu
+const noteOf = k => { const n = String(k.isim || '').trim(); return n === 'İsimsiz' ? '' : n; };
+const miniDots = (k, label) => FORMATIONS[k.dizilis].map(([, x, y], i) => {
+  const p = byNo[k.oyuncular[i]];
+  return `<div class="md" style="left:${x}%;top:${y}%"><b>${p.no}</b><span>${esc(label(p))}</span></div>`;
+}).join('');
+function wallCard(k, i) {
+  const note = noteOf(k);
+  return `<button type="button" class="wc" data-wall="${i}" aria-label="${esc(k.dizilis)} kadrosunu büyüt">
+    <span class="wc-h"><b>${esc(k.dizilis)}</b><span>${fmtTime(k.t)}</span></span>
+    <span class="mini">${PITCH_LINES}${miniDots(k, p => p.ad)}</span>
+    ${note ? `<span class="wc-note">${esc(note)}</span>` : ''}
+  </button>`;
 }
 function renderWall() {
   const n = wall.length;
@@ -1053,6 +1088,31 @@ async function loadWall() {
 $('#wall').addEventListener('click', e => { if (e.target.closest('[data-retry]')) loadWall(); });
 $('#wRefresh').addEventListener('click', loadWall);
 $('#wMore').addEventListener('click', () => { wShown += 24; renderWall(); });
+
+// Kadroya dokununca büyük görünüm
+const kd = $('#kd');
+let kdIdx = 0;
+function renderKd() {
+  const k = wall[kdIdx]; if (!k) return;
+  const note = noteOf(k);
+  $('#kdTime').textContent = fmtTime(k.t);
+  $('#kdTitle').textContent = `Kadro · ${k.dizilis}`;
+  $('#kdPitch').innerHTML = PITCH_LINES + miniDots(k, shortName);
+  $('#kdPitch').setAttribute('aria-label', k.oyuncular.map(n => shortName(byNo[n])).join(', '));
+  $('#kdNote').textContent = note;
+  $('#kdNote').hidden = !note;
+  $('#kdPrev').disabled = $('#kdNext').disabled = wall.length < 2;
+}
+const kdStep = d => { kdIdx = (kdIdx + d + wall.length) % wall.length; renderKd(); };
+$('#wall').addEventListener('click', e => {
+  const c = e.target.closest('[data-wall]'); if (!c || c.classList.contains('incoming')) return;
+  kdIdx = Number(c.dataset.wall); renderKd();
+  if (!kd.open) kd.showModal();
+});
+kd.addEventListener('click', e => { if (e.target === kd || e.target.closest('[data-close]')) kd.close(); });
+$('#kdPrev').addEventListener('click', () => kdStep(-1));
+$('#kdNext').addEventListener('click', () => kdStep(1));
+kd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') kdStep(-1); if (e.key === 'ArrowRight') kdStep(1); });
 loadWall();
 
 // Forma: oyuncu seçici (varsayılan Evrens)
