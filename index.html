@@ -7,6 +7,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Instrument+Serif:ital@0;1&family=Barlow:wght@800&family=Barlow+Condensed:wght@700&family=Graduate&family=Saira+Condensed:wght@700&display=swap">
+<meta name="description" content="Trabzon Lisesi 10-C sınıf takımı 142C: kadro, forma, turnuva ve taraftar kadroları.">
+<meta name="theme-color" content="#120A28">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="142C">
+<meta property="og:title" content="142C · Trabzon Lisesi 10-C">
+<meta property="og:description" content="Bir sınıf, bir takım, tek renk: mor. Kadroyu gör, kendi ilk 9'unu kur.">
+<meta property="og:url" content="https://resatberk2010.github.io/oyun/">
+<meta property="og:image" content="https://resatberk2010.github.io/oyun/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://resatberk2010.github.io/oyun/og.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 150'><polygon points='50,3 95,52 50,147 5,52' fill='white'/><polygon points='17.3,78 82.7,78 50,147' fill='%234A10B0'/><g transform='translate(50 46) scale(.6) translate(-50 -54)' fill='%23E0222B' stroke='%23E0222B' stroke-width='0'><path d='M50 18 C59 30 61 44 54 58 H46 C39 44 41 30 50 18 Z'/><path d='M45 62 C32 65 20 57 20 45 C20 35 30 31 35 38 C29 41 30 50 38 53 C42 55 44 57 45 58 Z'/><path d='M55 62 C68 65 80 57 80 45 C80 35 70 31 65 38 C71 41 70 50 62 53 C58 55 56 57 55 58 Z'/><rect x='35' y='58' width='30' height='7'/><path d='M45 65 L43 80 C39 81 36 85 38 89 L50 85 L62 89 C64 85 61 81 57 80 L55 65 Z'/></g><polygon points='50,3 95,52 50,147 5,52' fill='none' stroke='%23C9A75A' stroke-width='6'/></svg>">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -220,6 +233,44 @@ section.block{padding-block:104px 0}
 .wall-state{grid-column:1/-1;padding:32px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line-2);border-radius:16px;display:grid;gap:12px;justify-items:center}
 .wall-more{display:flex;justify-content:center;margin-top:20px}
 
+/* Geri sayım */
+.countdown{margin-top:30px;display:grid;gap:14px;padding:18px 20px;border:1px solid var(--gold-line);border-radius:16px;background:rgba(11,6,25,.35);max-width:460px}
+.cd-h{display:flex;justify-content:space-between;align-items:baseline;gap:6px 14px;flex-wrap:wrap}
+.cd-h b{font:800 1.05rem var(--f-display);font-stretch:115%;text-transform:uppercase}
+.cd-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cd-row div{text-align:center;padding:10px 4px;border-radius:10px;background:rgba(255,255,255,.05)}
+.cd-row b{display:block;font:800 1.9rem/1 var(--f-display);font-stretch:110%;font-variant-numeric:tabular-nums}
+.cd-row span{display:block;margin-top:6px;font:600 .6rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.cd-live{font:800 1.6rem var(--f-display);font-stretch:115%;text-transform:uppercase;color:var(--gold)}
+
+/* Krallık */
+.kings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.king{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.king li{display:grid;grid-template-columns:22px 38px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.king li > i{font-style:normal;color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums}
+.king .no{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#FFFFFF;color:#3A12A8;font:800 .9rem var(--f-display);font-stretch:110%}
+.king .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.king .v{font:800 1.5rem var(--f-display);font-stretch:110%;font-variant-numeric:tabular-nums}
+.king li.top{border-color:var(--gold-line);background:radial-gradient(90% 120% at 0% 50%,rgba(211,180,110,.16),transparent 70%),var(--bg)}
+.king li.top .v,.king li.top > i{color:var(--gold)}
+.king-empty{color:var(--dim);font-size:.92rem;padding:8px 2px}
+.pc-goal{position:absolute;top:12px;left:12px;font:700 .6rem var(--f-body);font-stretch:80%;letter-spacing:.16em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--gold);color:#1B1033}
+
+/* Beğeni ve paylaşım */
+.wc-f{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.heart{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--muted);font:700 .8rem var(--f-body);font-variant-numeric:tabular-nums;cursor:pointer;transition:color .2s,border-color .2s,background .2s,transform .15s}
+.heart svg{width:16px;height:16px}
+.heart:hover{color:var(--text);border-color:var(--lily)}
+.heart:active{transform:scale(.92)}
+.heart[aria-pressed="true"]{color:#FFFFFF;background:rgba(227,52,60,.18);border-color:var(--lily)}
+.heart[aria-pressed="true"] svg{fill:var(--lily);stroke:var(--lily)}
+.heart.big{padding:10px 16px;font-size:.95rem}
+.heart.big svg{width:20px;height:20px}
+.fav-badge{font:700 .58rem var(--f-body);font-stretch:80%;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc.is-fav{border-color:var(--gold-line)}
+.kd-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.sh-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
 /* Grup */
 .group{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:20px;align-items:start}
 .slots{display:grid;gap:8px;list-style:none;margin:0;padding:0}
@@ -301,7 +352,7 @@ body:has(dialog[open]){overflow:hidden}
 .pd-nav .btn{padding:11px 18px}
 
 @media (max-width:980px){
-  .squad,.kit,.group,.builder,.wall-wrap{grid-template-columns:minmax(0,1fr)}
+  .squad,.kit,.group,.builder,.wall-wrap,.kings{grid-template-columns:minmax(0,1fr)}
   .fav{position:static;order:2}
   .lineup{position:static;max-width:420px}
   .picker{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
@@ -333,7 +384,7 @@ body:has(dialog[open]){overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .ticker-track,.hero-kit .float,.picking .slot:not(.filled) b,.wc.new,.b-hint.nudge{animation:none}
-  .pcard,.pc-kit,.btn,.wc{transition:none}
+  .pcard,.pc-kit,.btn,.wc,.heart{transition:none}
 }
 </style>
 
@@ -342,6 +393,7 @@ body:has(dialog[open]){overflow:hidden}
     <a class="brand" href="#ana"><span data-crest></span><span><b data-team-name>142C</b><small>Trabzon Lisesi · 10-C</small></span></a>
     <nav class="menu" aria-label="Bölümler">
       <a href="#kadro">Kadro</a>
+      <a href="#istatistik">Krallık</a>
       <a href="#kur">Kadronu kur</a>
       <a href="#taraftar">Sizin kadrolarınız</a>
       <a href="#forma">Forma</a>
@@ -365,7 +417,7 @@ body:has(dialog[open]){overflow:hidden}
         <a class="btn btn-primary" href="#kadro">Kadroyu gör</a>
         <a class="btn btn-ghost" href="#forma">Formayı incele</a>
       </div>
-      <div class="status"><i></i>Kura henüz çekilmedi. Fikstür belli olunca eklenecek.</div>
+      <div class="status" id="nextMatch"><i></i>Kura henüz çekilmedi. Fikstür belli olunca eklenecek.</div>
     </div>
     <div class="hero-kit"><div class="float" id="heroKit"></div></div>
   </div>
@@ -405,6 +457,20 @@ body:has(dialog[open]){overflow:hidden}
     </div>
   </section>
 
+  <section class="block wrap" id="istatistik">
+    <div class="sh">
+      <div>
+        <div class="kicker label">Turnuva istatistikleri</div>
+        <h2 class="display">Krallık</h2>
+        <p>Gol ve asist sıralaması her maçtan sonra güncellenir.</p>
+      </div>
+    </div>
+    <div class="kings">
+      <div class="panel"><h3 class="display">Gol krallığı</h3><ol class="king" id="kGol"></ol></div>
+      <div class="panel"><h3 class="display">Asist krallığı</h3><ol class="king" id="kAsist"></ol></div>
+    </div>
+  </section>
+
   <section class="block wrap" id="kur">
     <div class="sh">
       <div>
@@ -428,6 +494,7 @@ body:has(dialog[open]){overflow:hidden}
           <div class="field"><label for="bName">Not</label><input id="bName" maxlength="80" placeholder="Kadrona bir not ekle (isteğe bağlı)" autocomplete="off"></div>
           <button type="button" class="btn btn-primary" id="bSend" disabled>Kadromu gönder</button>
           <p class="b-msg" id="bMsg" aria-live="polite"></p>
+          <button type="button" class="btn btn-ghost" id="bShot" hidden>Kadronu resim olarak indir</button>
         </div>
       </div>
     </div>
@@ -440,7 +507,7 @@ body:has(dialog[open]){overflow:hidden}
         <h2 class="display">Sizin kadrolarınız</h2>
         <p>Gönderilen bütün kadrolar, en yenisi en üstte.</p>
       </div>
-      <button type="button" class="btn btn-ghost" id="wRefresh">Yenile</button>
+      <div class="sh-tools"><div class="seg" id="wSort" role="group" aria-label="Sırala"><button type="button" data-sort="new" aria-pressed="true">En yeni</button><button type="button" data-sort="top" aria-pressed="false">En beğenilen</button></div><button type="button" class="btn btn-ghost" id="wRefresh">Yenile</button></div>
     </div>
     <div class="wall-wrap">
       <aside class="panel fav" aria-label="En çok seçilen oyuncular">
@@ -573,6 +640,7 @@ body:has(dialog[open]){overflow:hidden}
     </div>
     <div class="mini big" id="kdPitch"></div>
     <p class="wc-note" id="kdNote"></p>
+    <div class="kd-actions"><button type="button" class="heart big" id="kdLike" aria-pressed="false"></button><button type="button" class="btn btn-ghost" id="kdShot">Resim olarak indir</button></div>
     <div class="pd-nav">
       <button type="button" class="btn btn-ghost" id="kdPrev">← Önceki</button>
       <button type="button" class="btn btn-primary" data-close>Kapat</button>
@@ -615,6 +683,10 @@ const lineup = [
   { no: 10, x: 22, y: 21 }, { no: 8,  x: 78, y: 21 },
 ];
 const KIT = { body: '#4A10B0', white: '#F6F4FB', red: '#E0222B' };
+// Sıradaki maç: tarih 'YYYY-AA-GG', saat 'SS:DD'. Boşken girişte "Kura henüz çekilmedi" yazar.
+const NEXT_MATCH = { tarih: '', saat: '', rakip: '' };
+const SITE_URL = 'resatberk2010.github.io/oyun';
+let stats = {}; // forma no -> { gol, asist }; Google Tablodaki "İstatistik" sayfasından gelir
 /* ================================= */
 
 const $ = s => document.querySelector(s);
@@ -793,8 +865,10 @@ function renderCards() {
   const list = players.filter(p => filter === 'ALL' || p.hat === filter);
   $('#cards').innerHTML = list.map(p => {
     const [first, last] = splitName(p.adSoyad || p.ad);
+    const gol = stats[p.no]?.gol || 0;
     return `<button type="button" class="pcard" data-player="${p.no}" aria-label="${esc(p.adSoyad || p.ad)} bilgilerini aç">
       <span class="pc-num" aria-hidden="true">${p.no}</span>
+      ${gol ? `<span class="pc-goal">${gol} gol</span>` : ''}
       <span class="pc-kit">${jersey({ no: p.no, name: p.ad })}</span>
       <span class="pc-meta"><span class="pc-pos">${esc(p.mevki)} · #${p.no}</span>
         <span class="pc-name">${esc(first)}<b${last.length > 10 ? ` class="long" style="--n:${last.length}"` : ''}>${esc(last)}</b></span></span>
@@ -835,6 +909,7 @@ function renderPlayer() {
   $('#pdSpecs').innerHTML = [
     ['Ad soyad', p.adSoyad || 'Eklenecek'], ['Formadaki isim', upper(p.ad)],
     ['Numara', p.no], ['Mevki', p.mevki],
+    ['Gol', stats[p.no]?.gol || 0], ['Asist', stats[p.no]?.asist || 0],
   ].map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('');
 }
 function openPlayer(no) {
@@ -918,7 +993,8 @@ function bRender() {
   $('#bSend').disabled = n !== 9 || bSending || !KADRO_API;
   if (!KADRO_API) setMsg('Gönderim yakında açılacak.');
 }
-const edited = () => { if (KADRO_API && !bSending) setMsg(''); bRender(); };
+let lastSent = null; // gönderilen son kadro: "resim olarak indir" düğmesi için
+const edited = () => { if (KADRO_API && !bSending) setMsg(''); $('#bShot').hidden = true; bRender(); };
 
 $('#bList').addEventListener('click', e => {
   const b = e.target.closest('[data-pick]'); if (!b) return;
@@ -963,6 +1039,7 @@ async function flyToWall(entry, clearBuilder) {
     margin: '0', zIndex: '60', pointerEvents: 'none', transformOrigin: '0 0', boxShadow: '0 30px 70px rgba(0,0,0,.65)' });
   wall.unshift(entry);
   wState = 'ready';
+  wSort = 'new'; // yeni kadro en üstte görünsün
   renderWall();
   const card = $('#wall .wc');
   if (reduceMotion() || !card) {
@@ -999,10 +1076,13 @@ $('#bSend').addEventListener('click', async () => {
     const d = await r.json();
     if (!d.ok) throw new Error(d.hata || 'hata');
     bSending = false; $('#bSend').textContent = 'Kadromu gönder';
-    await flyToWall({ ...entry, t: Date.now() }, () => {
+    const t = Number(d.t) || Date.now();
+    const sent = { ...entry, t, id: String(d.id || t) };
+    await flyToWall(sent, () => {
       bPick = Array(9).fill(null); bSel = null; $('#bName').value = '';
       bRender();
       setMsg('Kadron gönderildi.', 'ok');
+      lastSent = sent; $('#bShot').hidden = false;
     });
     setTimeout(loadWall, 2500);
   } catch (err) {
@@ -1015,7 +1095,22 @@ $('#bSend').addEventListener('click', async () => {
 bRender();
 
 // Sizin kadrolarınız duvarı
-let wall = [], wShown = 24, wState = 'loading';
+let wall = [], wView = [], wShown = 24, wState = 'loading', wSort = 'new';
+let likes = {};                                   // kadro id -> beğeni sayısı
+let likesOn = false;                              // sunucu beğenileri destekliyor mu (Apps Script güncel mi)
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const liked = new Set(store.get('142c-begeni', []));
+let cid = store.get('142c-cid', null);
+if (!cid) {
+  cid = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('');
+  store.set('142c-cid', cid);
+}
+const HEART = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.8 3.6 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.4 0 5.6 3.3 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg>`;
+const kid = k => String(k.id || k.t);
+
 // Google E-Tablo "3-3-2" gibi dizilişleri tarihe çevirebiliyor ("Sun Mar 03 2002 …" = 3-3-2): geri çevir
 const MONTHS = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
 function normForm(s) {
@@ -1042,17 +1137,31 @@ const miniDots = (k, label) => FORMATIONS[k.dizilis].map(([, x, y], i) => {
   const p = byNo[k.oyuncular[i]];
   return `<div class="md" style="left:${x}%;top:${y}%"><b>${p.no}</b><span>${esc(label(p))}</span></div>`;
 }).join('');
-function wallCard(k, i) {
+const heartBtn = (k, big) => {
+  if (!likesOn) return '';
+  const id = kid(k);
+  return `<button type="button" class="heart${big ? ' big' : ''}" data-like="${esc(id)}" aria-pressed="${liked.has(id)}" aria-label="Beğen">${HEART}<span>${likes[id] || 0}</span></button>`;
+};
+// En çok beğenilen kadro (en az 1 beğeni; eşitlikte en yenisi)
+const favId = () => {
+  let best = null;
+  wall.forEach(k => { const n = likes[kid(k)] || 0; if (n > 0 && (!best || n > (likes[kid(best)] || 0))) best = k; });
+  return best && kid(best);
+};
+function wallCard(k, i, fav) {
   const note = noteOf(k);
-  return `<button type="button" class="wc" data-wall="${i}" aria-label="${esc(k.dizilis)} kadrosunu büyüt">
+  const isFav = fav === kid(k);
+  return `<div class="wc${isFav ? ' is-fav' : ''}" role="button" tabindex="0" data-wall="${i}" aria-label="${esc(k.dizilis)} kadrosunu büyüt">
     <span class="wc-h"><b>${esc(k.dizilis)}</b><span>${fmtTime(k.t)}</span></span>
     <span class="mini">${PITCH_LINES}${miniDots(k, p => p.ad)}</span>
     ${note ? `<span class="wc-note">${esc(note)}</span>` : ''}
-  </button>`;
+    <span class="wc-f">${heartBtn(k)}${isFav ? '<span class="fav-badge">Taraftarın favorisi</span>' : ''}</span>
+  </div>`;
 }
 function renderWall() {
   const n = wall.length;
   $('#wCount').textContent = n ? `${n} kadro gönderildi` : 'Herkese açık';
+  $('#wSort').querySelectorAll('[data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === wSort));
   // En çok seçilenler
   const counts = Object.fromEntries(players.map(p => [p.no, 0]));
   wall.forEach(k => k.oyuncular.forEach(no => counts[no]++));
@@ -1060,9 +1169,13 @@ function renderWall() {
     const pc = Math.round(counts[p.no] / n * 100);
     return `<li><i>${p.no}</i><span><span class="nm">${esc(p.ad)}</span><span class="track"><span class="fill" style="width:${pc}%"></span></span></span><span class="pc">%${pc}</span></li>`;
   }).join('') : `<li class="note" style="display:block">İlk kadro gelince burada görünecek.</li>`;
-  // Kadro kartları
+  // Kadro kartları (sıralı görünüm; büyük pencere de bu sırayı izler)
+  wView = wSort === 'top'
+    ? wall.slice().sort((a, b) => (likes[kid(b)] || 0) - (likes[kid(a)] || 0) || b.t - a.t)
+    : wall;
+  const fav = favId();
   let html;
-  if (n) html = wall.slice(0, wShown).map(wallCard).join('');
+  if (n) html = wView.slice(0, wShown).map((k, i) => wallCard(k, i, fav)).join('');
   else if (!KADRO_API) html = `<div class="wall-state">Kadrolar yakında burada görünecek.</div>`;
   else if (wState === 'loading') html = `<div class="wall-state">Kadrolar yükleniyor…</div>`;
   else if (wState === 'error') html = `<div class="wall-state">Kadrolar şu an yüklenemedi.<button type="button" class="btn btn-ghost" data-retry>Tekrar dene</button></div>`;
@@ -1070,6 +1183,7 @@ function renderWall() {
   $('#wall').innerHTML = html;
   $('#wMore').hidden = n <= wShown;
   $('#wRefresh').hidden = !KADRO_API;
+  $('#wSort').hidden = !likesOn;
 }
 async function loadWall() {
   if (!KADRO_API) { renderWall(); return; }
@@ -1079,13 +1193,61 @@ async function loadWall() {
     const d = await r.json();
     if (!d.ok || !Array.isArray(d.kadrolar)) throw new Error('bad');
     wall = d.kadrolar.filter(validEntry);
+    likesOn = !!d.begeniler && typeof d.begeniler === 'object';
+    likes = likesOn ? d.begeniler : {};
+    if (!likesOn) wSort = 'new';
+    if (Array.isArray(d.istatistik)) {
+      stats = Object.fromEntries(d.istatistik.filter(s => s.no in byNo).map(s => [s.no, { gol: +s.gol || 0, asist: +s.asist || 0 }]));
+      renderStats(); renderCards();
+    }
     wState = 'ready';
   } catch {
     wState = 'error';
   }
   renderWall();
 }
-$('#wall').addEventListener('click', e => { if (e.target.closest('[data-retry]')) loadWall(); });
+
+// Kalp: anında işaretlenir, sunucu sayıyı onaylar; hata olursa geri alınır
+function paintHearts(id) {
+  document.querySelectorAll(`[data-like="${CSS.escape(id)}"]`).forEach(b => {
+    b.setAttribute('aria-pressed', liked.has(id));
+    b.querySelector('span').textContent = likes[id] || 0;
+  });
+}
+async function toggleLike(id) {
+  if (!KADRO_API || !likesOn) return;
+  const on = !liked.has(id);
+  const undo = () => { on ? liked.delete(id) : liked.add(id); likes[id] = Math.max(0, (likes[id] || 0) + (on ? -1 : 1)); store.set('142c-begeni', [...liked]); paintHearts(id); };
+  on ? liked.add(id) : liked.delete(id);
+  likes[id] = Math.max(0, (likes[id] || 0) + (on ? 1 : -1));
+  store.set('142c-begeni', [...liked]);
+  paintHearts(id);
+  try {
+    const r = await fetch(KADRO_API, { method: 'POST', body: JSON.stringify({ islem: 'begen', id, cid, on }) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.hata || 'hata');
+    likes[id] = Number(d.sayi) || 0;
+    paintHearts(id);
+  } catch {
+    undo();
+  }
+}
+
+$('#wall').addEventListener('click', e => {
+  if (e.target.closest('[data-retry]')) { loadWall(); return; }
+  const h = e.target.closest('[data-like]');
+  if (h) { toggleLike(h.dataset.like); return; }
+  const c = e.target.closest('[data-wall]');
+  if (c && !c.classList.contains('incoming')) openKd(Number(c.dataset.wall));
+});
+$('#wall').addEventListener('keydown', e => {
+  const c = e.target.closest('[data-wall]');
+  if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openKd(Number(c.dataset.wall)); }
+});
+$('#wSort').addEventListener('click', e => {
+  const b = e.target.closest('[data-sort]'); if (!b) return;
+  wSort = b.dataset.sort; renderWall();
+});
 $('#wRefresh').addEventListener('click', loadWall);
 $('#wMore').addEventListener('click', () => { wShown += 24; renderWall(); });
 
@@ -1093,7 +1255,7 @@ $('#wMore').addEventListener('click', () => { wShown += 24; renderWall(); });
 const kd = $('#kd');
 let kdIdx = 0;
 function renderKd() {
-  const k = wall[kdIdx]; if (!k) return;
+  const k = wView[kdIdx]; if (!k) return;
   const note = noteOf(k);
   $('#kdTime').textContent = fmtTime(k.t);
   $('#kdTitle').textContent = `Kadro · ${k.dizilis}`;
@@ -1101,18 +1263,170 @@ function renderKd() {
   $('#kdPitch').setAttribute('aria-label', k.oyuncular.map(n => shortName(byNo[n])).join(', '));
   $('#kdNote').textContent = note;
   $('#kdNote').hidden = !note;
-  $('#kdPrev').disabled = $('#kdNext').disabled = wall.length < 2;
+  const id = kid(k);
+  $('#kdLike').dataset.like = id;
+  $('#kdLike').innerHTML = `${HEART}<span>${likes[id] || 0}</span>`;
+  $('#kdLike').setAttribute('aria-pressed', liked.has(id));
+  $('#kdLike').hidden = !likesOn;
+  $('#kdPrev').disabled = $('#kdNext').disabled = wView.length < 2;
 }
-const kdStep = d => { kdIdx = (kdIdx + d + wall.length) % wall.length; renderKd(); };
-$('#wall').addEventListener('click', e => {
-  const c = e.target.closest('[data-wall]'); if (!c || c.classList.contains('incoming')) return;
-  kdIdx = Number(c.dataset.wall); renderKd();
-  if (!kd.open) kd.showModal();
-});
+function openKd(i) { kdIdx = i; renderKd(); if (!kd.open) kd.showModal(); }
+const kdStep = d => { kdIdx = (kdIdx + d + wView.length) % wView.length; renderKd(); };
 kd.addEventListener('click', e => { if (e.target === kd || e.target.closest('[data-close]')) kd.close(); });
+$('#kdLike').addEventListener('click', () => toggleLike($('#kdLike').dataset.like));
+$('#kdShot').addEventListener('click', () => shareLineup(wView[kdIdx], $('#kdShot')));
+$('#bShot').addEventListener('click', () => lastSent && shareLineup(lastSent, $('#bShot')));
 $('#kdPrev').addEventListener('click', () => kdStep(-1));
 $('#kdNext').addEventListener('click', () => kdStep(1));
 kd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') kdStep(-1); if (e.key === 'ArrowRight') kdStep(1); });
+
+// Krallık: gol ve asist sıralaması
+function renderStats() {
+  const list = (key, el) => {
+    const rows = players.filter(p => (stats[p.no]?.[key] || 0) > 0)
+      .sort((a, b) => stats[b.no][key] - stats[a.no][key] || a.ad.localeCompare(b.ad, 'tr'));
+    $(el).innerHTML = rows.length ? rows.map((p, i) => {
+      const rank = i && stats[rows[i - 1].no][key] === stats[p.no][key] ? '' : i + 1; // eşitlerde sıra tekrarlanmaz
+      const top = stats[p.no][key] === stats[rows[0].no][key];
+      return `<li class="${top ? 'top' : ''}"><i>${rank}</i><span class="no">${p.no}</span><span class="nm">${esc(shortName(p))}</span><span class="v">${stats[p.no][key]}</span></li>`;
+    }).join('') : `<li class="king-empty">Turnuva başlayınca güncellenecek.</li>`;
+  };
+  list('gol', '#kGol');
+  list('asist', '#kAsist');
+}
+renderStats();
+
+// Kadroyu resim olarak: 1080×1920 (hikâye boyutu) tuval; telefonda paylaşım menüsü, bilgisayarda indirme
+function loadImg(src) {
+  return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+}
+const crestDataUrl = () => 'data:image/svg+xml;charset=utf-8,' +
+  encodeURIComponent(crestSvg().replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" '));
+function wrapLines(ctx, text, max, maxLines) {
+  const words = text.split(/\s+/), lines = [];
+  let line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > max && line) { lines.push(line); line = w; } else line = test;
+  }
+  if (line) lines.push(line);
+  if (lines.length > maxLines) { lines.length = maxLines; lines[maxLines - 1] += '…'; }
+  return lines;
+}
+async function lineupImage(k) {
+  await Promise.all([
+    document.fonts.load('800 100px "Archivo"'), document.fonts.load('600 30px "Archivo"'),
+    document.fonts.load('italic 44px "Instrument Serif"'),
+  ]).catch(() => {});
+  const W = 1080, H = 1920, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const font = (spec, stretch = 'normal', spacing = '0px') => { x.font = spec; if ('fontStretch' in x) x.fontStretch = stretch; if ('letterSpacing' in x) x.letterSpacing = spacing; };
+  // zemin
+  let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1C0E44'); g.addColorStop(1, '#0B0619');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  g = x.createRadialGradient(W / 2, 260, 40, W / 2, 260, 900); g.addColorStop(0, 'rgba(122,70,255,.45)'); g.addColorStop(1, 'rgba(122,70,255,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = 'rgba(255,255,255,.03)';
+  for (let i = 60; i < W; i += 64) x.fillRect(i, 0, 2, H);
+  // arma + başlık
+  try { x.drawImage(await loadImg(crestDataUrl()), W / 2 - 70, 90, 140, 210); } catch {}
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  font('800 170px "Archivo", "Arial Black", sans-serif', 'expanded');
+  g = x.createLinearGradient(0, 330, 0, 480); g.addColorStop(0, '#FFFFFF'); g.addColorStop(1, '#C7B5FF');
+  x.fillStyle = g; x.fillText(TEAM.name, W / 2, 480);
+  font('600 34px "Archivo", sans-serif', 'condensed', '8px');
+  x.fillStyle = '#D3B46E'; x.fillText(upper(`Benim ilk 9'um · ${k.dizilis}`), W / 2, 548);
+  // saha
+  const pw = 800, ph = 1066, px = (W - pw) / 2, py = 600;
+  x.save();
+  x.beginPath(); x.roundRect ? x.roundRect(px, py, pw, ph, 28) : x.rect(px, py, pw, ph); x.clip();
+  for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? '#241352' : '#1F1048'; x.fillRect(px, py + i * ph / 8, pw, ph / 8 + 1); }
+  x.restore();
+  const sx = v => px + v / 60 * pw, sy = v => py + v / 80 * ph;
+  x.strokeStyle = 'rgba(211,180,110,.45)'; x.lineWidth = 3;
+  x.strokeRect(sx(2), sy(2), sx(58) - sx(2), sy(78) - sy(2));
+  x.beginPath(); x.moveTo(sx(2), sy(40)); x.lineTo(sx(58), sy(40)); x.stroke();
+  x.beginPath(); x.arc(sx(30), sy(40), 7 / 60 * pw, 0, Math.PI * 2); x.stroke();
+  [[16, 2, 28, 11], [23, 2, 14, 4.5], [16, 67, 28, 11], [23, 73.5, 14, 4.5]].forEach(([a, b, w, h]) => x.strokeRect(sx(a), sy(b), w / 60 * pw, h / 80 * ph));
+  // oyuncular
+  FORMATIONS[k.dizilis].forEach(([, fx, fy], i) => {
+    const p = byNo[k.oyuncular[i]];
+    const cx = px + fx / 100 * pw, cy = py + fy / 100 * ph;
+    x.save(); x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 24; x.shadowOffsetY = 8;
+    x.fillStyle = '#FFFFFF'; x.beginPath(); x.arc(cx, cy, 46, 0, Math.PI * 2); x.fill(); x.restore();
+    font('800 40px "Archivo", "Arial Black", sans-serif', 'semi-expanded');
+    x.fillStyle = '#3A12A8'; x.textBaseline = 'middle'; x.fillText(String(p.no), cx, cy + 2);
+    font('700 26px "Archivo", sans-serif', 'condensed', '2px');
+    x.textBaseline = 'alphabetic'; x.fillStyle = '#FFFFFF';
+    x.save(); x.shadowColor = 'rgba(0,0,0,.8)'; x.shadowBlur = 8; x.fillText(upper(shortName(p)), cx, cy + 86); x.restore();
+  });
+  // not ve imza
+  const note = noteOf(k);
+  if (note) {
+    font('italic 46px "Instrument Serif", Georgia, serif');
+    x.fillStyle = '#D9CEF7';
+    wrapLines(x, `“${note}”`, 900, 2).forEach((l, i) => x.fillText(l, W / 2, 1745 + i * 54));
+  }
+  const footY = note ? 1862 : 1790;
+  font('600 30px "Archivo", sans-serif', 'condensed', '4px');
+  x.fillStyle = '#D3B46E'; x.fillText(`@${TEAM.instagram}`, W / 2, footY);
+  font('500 26px "Archivo", sans-serif', 'normal', '1px');
+  x.fillStyle = 'rgba(244,240,255,.55)'; x.fillText(SITE_URL, W / 2, footY + 38);
+  return new Promise(res => c.toBlob(res, 'image/png'));
+}
+async function shareLineup(k, btn) {
+  if (!k) return;
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Hazırlanıyor…';
+  try {
+    const blob = await lineupImage(k);
+    const file = new File([blob], '142C-kadro.png', { type: 'image/png' });
+    if (matchMedia('(pointer: coarse)').matches && navigator.canShare?.({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: `${TEAM.name} kadrom` }); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: '142C-kadro.png' });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch {
+    btn.textContent = 'Resim hazırlanamadı';
+    setTimeout(() => { btn.textContent = label; }, 2500);
+    return;
+  } finally {
+    btn.disabled = false;
+    if (btn.textContent === 'Hazırlanıyor…') btn.textContent = label;
+  }
+}
+
+// Sıradaki maça geri sayım (girişte)
+function startCountdown() {
+  if (!NEXT_MATCH.tarih) return;
+  const [y, m, d] = NEXT_MATCH.tarih.split('-').map(Number);
+  const [hh, mm] = (NEXT_MATCH.saat || '00:00').split(':').map(Number);
+  const target = new Date(y, m - 1, d, hh || 0, mm || 0);
+  if (isNaN(target)) return;
+  const when = target.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }) + (NEXT_MATCH.saat ? ' · ' + NEXT_MATCH.saat : '');
+  const el = $('#nextMatch');
+  el.className = 'countdown';
+  el.innerHTML = `<div class="cd-h"><span class="label">Sıradaki maç</span><span class="label" style="color:var(--muted)">${esc(when)}</span></div>
+    <b class="display" style="font-size:1.3rem">${esc(TEAM.name)} – ${esc(NEXT_MATCH.rakip || 'Rakip belli değil')}</b>
+    <div class="cd-row" id="cdRow"></div>`;
+  const units = [['gün', 864e5], ['saat', 36e5], ['dakika', 6e4], ['saniye', 1e3]];
+  const tick = () => {
+    const left = target - Date.now();
+    if (left <= 0) {
+      $('#cdRow').outerHTML = `<div class="cd-live" id="cdRow">${left > -3 * 36e5 ? 'Maç günü!' : 'Maç oynandı'}</div>`;
+      clearInterval(timer); return;
+    }
+    let rest = left;
+    $('#cdRow').innerHTML = units.map(([u, ms]) => { const v = Math.floor(rest / ms); rest -= v * ms; return `<div><b>${String(v).padStart(2, '0')}</b><span>${u}</span></div>`; }).join('');
+  };
+  const timer = setInterval(tick, 1000);
+  tick();
+}
+startCountdown();
 loadWall();
 
 // Forma: oyuncu seçici (varsayılan Evrens)
@@ -1135,10 +1449,15 @@ renderKit();
 $('#groupSlots').innerHTML =
   `<li class="us">${crestSvg()}<span>${esc(TEAM.name)} · ${esc(TEAM.sinif)}</span></li>` +
   [1, 2, 3].map(() => `<li><i>?</i><span>Kura bekleniyor</span></li>`).join('');
-$('#fixture').innerHTML = [1, 2, 3].map(n => `
-  <div class="fix-row"><span class="k">Maç ${n}</span>
-  <span class="t">${esc(TEAM.name)} <em>– rakip belli değil</em></span>
-  <span class="d">Tarih yok</span></div>`).join('');
+$('#fixture').innerHTML = [1, 2, 3].map(n => {
+  // ilk satır, belliyse sıradaki maçı gösterir
+  const nm = n === 1 && NEXT_MATCH.tarih ? NEXT_MATCH : null;
+  const when = nm ? new Date(...nm.tarih.split('-').map((v, i) => i === 1 ? v - 1 : +v))
+    .toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + (nm.saat ? ' · ' + nm.saat : '') : 'Tarih yok';
+  return `<div class="fix-row"><span class="k">Maç ${n}</span>
+    <span class="t">${esc(TEAM.name)} <em>– ${nm && nm.rakip ? esc(nm.rakip) : 'rakip belli değil'}</em></span>
+    <span class="d">${esc(when)}</span></div>`;
+}).join('');
 
 // Turnuva ağacı: gruplar → çeyrek final → yarı final → final → şampiyon
 const box = () => `<div class="m"><div><span>Belli değil</span><span>–</span></div><div><span>Belli değil</span><span>–</span></div></div>`;
