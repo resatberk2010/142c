@@ -151,6 +151,58 @@ section.block{padding-block:104px 0}
 .panel h3{font-size:1.25rem;margin-bottom:16px}
 .note{margin:14px 0 0;font-size:.88rem;color:var(--dim)}
 
+/* Kadronu kur */
+.builder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.b-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.link-btn{background:none;border:0;padding:4px 0;color:var(--muted);font:600 .7rem var(--f-body);font-stretch:80%;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:color .2s}
+.link-btn:hover{color:var(--gold)}
+.b-pitch{max-width:440px;margin-inline:auto}
+.slot{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;cursor:pointer;font:inherit}
+.slot b{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1.5px dashed rgba(211,180,110,.75);color:var(--gold);font:500 1.3rem/1 var(--f-body);background:rgba(11,6,25,.4);transition:box-shadow .2s,transform .2s}
+.slot:hover b{transform:scale(1.08)}
+.slot.filled b{border:0;background:#FFFFFF;color:#3A12A8;font:800 1rem var(--f-display);font-stretch:110%;box-shadow:0 6px 14px rgba(0,0,0,.45)}
+.slot.active b{box-shadow:0 0 0 3px var(--viola-hi),0 0 22px rgba(154,114,255,.75)}
+.slot span{font:700 .62rem var(--f-body);font-stretch:80%;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;text-shadow:0 1px 3px rgba(0,0,0,.8);white-space:nowrap}
+.slot:not(.filled) span{color:rgba(255,255,255,.6)}
+.b-hint{font:800 1.05rem var(--f-display);font-stretch:112%;text-transform:uppercase;margin:0 0 14px}
+.b-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.b-list .pk{min-width:0;overflow:hidden}
+.b-list .pk small{margin-left:auto;font-size:.66rem;letter-spacing:.06em;color:var(--dim);white-space:nowrap}
+.b-list .pk.used{opacity:.45}
+.b-send{margin-top:16px;display:grid;gap:14px}
+.field label{display:block;margin-bottom:6px;font:600 .66rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.field input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);font:500 1rem var(--f-body)}
+.field input:focus{outline:none;border-color:var(--gold)}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.b-msg{margin:0;font-size:.9rem;color:var(--muted)}
+.b-msg.ok{color:var(--gold)}
+.b-msg.err{color:#FF8A8F}
+@media (max-width:520px){.b-list .pk small{display:none}}
+
+/* Taraftar kadroları */
+.wall-wrap{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start}
+.fav{position:sticky;top:90px}
+.fav ol{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.fav li{display:grid;grid-template-columns:30px minmax(0,1fr) 40px;gap:10px;align-items:center;font-size:.86rem}
+.fav li i{font:800 .85rem var(--f-display);font-stretch:110%;font-style:normal;color:var(--gold)}
+.fav .nm{display:block;margin-bottom:4px}
+.fav .track{display:block;height:5px;border-radius:3px;background:var(--line)}
+.fav .fill{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--viola),var(--viola-hi))}
+.fav .pc{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.wc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px;min-width:0}
+.wc-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.wc-h b{font:800 .95rem var(--f-display);font-stretch:112%;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.wc-h span{flex:none;font:600 .62rem var(--f-body);font-stretch:75%;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.mini{position:relative;width:100%;max-width:100%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:repeating-linear-gradient(180deg,#1F1048 0 12.5%,#241352 12.5% 25%)}
+.mini svg.lines{position:absolute;inset:0;width:100%;height:100%}
+.md{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.md b{width:24px;height:24px;border-radius:50%;background:#FFFFFF;color:#3A12A8;display:grid;place-items:center;font:800 .66rem var(--f-display);font-stretch:110%;box-shadow:0 3px 8px rgba(0,0,0,.45)}
+.md span{font:700 .5rem var(--f-body);font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.8);white-space:nowrap}
+.wc-f{font-size:.74rem;color:var(--dim)}
+.wall-state{grid-column:1/-1;padding:32px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line-2);border-radius:16px;display:grid;gap:12px;justify-items:center}
+.wall-more{display:flex;justify-content:center;margin-top:20px}
+
 /* Grup */
 .group{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:20px;align-items:start}
 .slots{display:grid;gap:8px;list-style:none;margin:0;padding:0}
@@ -232,7 +284,8 @@ body:has(dialog[open]){overflow:hidden}
 .pd-nav .btn{padding:11px 18px}
 
 @media (max-width:980px){
-  .squad,.kit,.group{grid-template-columns:minmax(0,1fr)}
+  .squad,.kit,.group,.builder,.wall-wrap{grid-template-columns:minmax(0,1fr)}
+  .fav{position:static;order:2}
   .lineup{position:static;max-width:420px}
   .picker{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
   .pd{grid-template-columns:minmax(0,1fr)}
@@ -272,6 +325,8 @@ body:has(dialog[open]){overflow:hidden}
     <a class="brand" href="#ana"><span data-crest></span><span><b data-team-name>142C</b><small>Trabzon Lisesi · 10-C</small></span></a>
     <nav class="menu" aria-label="Bölümler">
       <a href="#kadro">Kadro</a>
+      <a href="#kur">Kadronu kur</a>
+      <a href="#taraftar">Taraftar kadroları</a>
       <a href="#forma">Forma</a>
       <a href="#grup">Grup</a>
       <a href="#agac">Turnuva ağacı</a>
@@ -330,6 +385,56 @@ body:has(dialog[open]){overflow:hidden}
           </svg>
         </div>
       </aside>
+    </div>
+  </section>
+
+  <section class="block wrap" id="kur">
+    <div class="sh">
+      <div>
+        <div class="kicker label">Senin ilk 9'un</div>
+        <h2 class="display">Kadronu kur</h2>
+        <p>Oyuncularımızla kendi ilk 9'unu kur ve gönder. Gönderilen kadrolar aşağıda herkese açık görünür.</p>
+      </div>
+      <div class="seg" id="bForms" role="group" aria-label="Diziliş seç"></div>
+    </div>
+    <div class="builder">
+      <div class="panel">
+        <div class="b-top"><span class="label" id="bCount">0 / 9</span><button type="button" class="link-btn" id="bClear">Temizle</button></div>
+        <div class="pitch b-pitch" id="bPitch"></div>
+      </div>
+      <div>
+        <div class="panel">
+          <p class="b-hint" id="bHint" aria-live="polite"></p>
+          <div class="b-list" id="bList" role="group" aria-label="Oyuncu seç"></div>
+        </div>
+        <div class="panel b-send">
+          <div class="field"><label for="bName">Adın</label><input id="bName" maxlength="30" placeholder="Kadroda görünecek isim" autocomplete="off"></div>
+          <button type="button" class="btn btn-primary" id="bSend" disabled>Kadromu gönder</button>
+          <p class="b-msg" id="bMsg" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="taraftar">
+    <div class="sh">
+      <div>
+        <div class="kicker label" id="wCount">Herkese açık</div>
+        <h2 class="display">Taraftar kadroları</h2>
+        <p>Gönderilen bütün kadrolar, en yenisi en üstte.</p>
+      </div>
+      <button type="button" class="btn btn-ghost" id="wRefresh">Yenile</button>
+    </div>
+    <div class="wall-wrap">
+      <aside class="panel fav" aria-label="En çok seçilen oyuncular">
+        <h3 class="display">En çok seçilenler</h3>
+        <p class="note" style="margin:6px 0 16px">Oyuncunun kaç kadroda yer aldığı</p>
+        <ol id="fav"></ol>
+      </aside>
+      <div>
+        <div class="wall" id="wall"></div>
+        <div class="wall-more"><button type="button" class="btn btn-ghost" id="wMore" hidden>Daha fazla göster</button></div>
+      </div>
     </div>
   </section>
 
@@ -447,6 +552,9 @@ document.documentElement.lang = 'tr'; // büyük harfte "i" -> "İ" doğru çevr
 
 /* ===== Düzenlenecek veriler ===== */
 const TEAM = { name: '142C', sinif: '10-C', okul: 'Trabzon Lisesi', instagram: '142_c_futbolkulubu' };
+// Taraftar kadrolarının saklandığı Google E-Tablo'nun Apps Script web uygulaması adresi (…/exec).
+// Kurulum: takim/kadro-api.gs. Boşken kadro kurulabilir ama gönderilemez.
+const KADRO_API = '';
 
 const LINES = { KL: 'Kaleci', DF: 'Defans', OS: 'Orta saha', HC: 'Hücum' };
 // ad: formadaki isim. İsteğe bağlı: foto: 'foto/saral.jpg' (yüz), formaFoto: 'foto/saral-forma.jpg'
@@ -709,6 +817,153 @@ dlg.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') step(-1);
   if (e.key === 'ArrowRight') step(1);
 });
+
+// ===== Kadronu kur + Taraftar kadroları =====
+const FORMATIONS = {
+  '3-3-2': [['KL', 50, 89], ['DF', 20, 68], ['DF', 50, 73], ['DF', 80, 68], ['OS', 24, 46], ['OS', 50, 50], ['OS', 76, 46], ['HC', 22, 21], ['HC', 78, 21]],
+  '3-2-3': [['KL', 50, 89], ['DF', 20, 68], ['DF', 50, 73], ['DF', 80, 68], ['OS', 32, 47], ['OS', 68, 47], ['HC', 18, 24], ['HC', 50, 18], ['HC', 82, 24]],
+  '4-3-1': [['KL', 50, 89], ['DF', 14, 66], ['DF', 38, 73], ['DF', 62, 73], ['DF', 86, 66], ['OS', 24, 45], ['OS', 50, 49], ['OS', 76, 45], ['HC', 50, 19]],
+};
+const PITCH_LINES = `<svg class="lines" viewBox="0 0 60 80" aria-hidden="true" fill="none" stroke="rgba(211,180,110,.38)" stroke-width=".4">
+  <rect x="2" y="2" width="56" height="76"/><line x1="2" y1="40" x2="58" y2="40"/><circle cx="30" cy="40" r="7"/>
+  <rect x="16" y="2" width="28" height="11"/><rect x="23" y="2" width="14" height="4.5"/>
+  <rect x="16" y="67" width="28" height="11"/><rect x="23" y="73.5" width="14" height="4.5"/></svg>`;
+$('#bPitch').innerHTML = PITCH_LINES;
+
+const DRAFT_KEY = '142c-kadro';
+let bForm = '3-3-2', bPick = Array(9).fill(null), bActive = 0, bSending = false;
+try {
+  const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+  if (d && FORMATIONS[d.form] && Array.isArray(d.pick) && d.pick.length === 9) {
+    bForm = d.form; bPick = d.pick.map(n => (n in byNo ? n : null)); $('#bName').value = d.name || '';
+  }
+} catch {}
+const saveDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ form: bForm, pick: bPick, name: $('#bName').value })); } catch {} };
+const filled = () => bPick.filter(n => n != null).length;
+const setMsg = (text, kind = '') => { $('#bMsg').textContent = text; $('#bMsg').className = 'b-msg' + (kind ? ' ' + kind : ''); };
+
+function bRender() {
+  const f = FORMATIONS[bForm];
+  $('#bForms').innerHTML = Object.keys(FORMATIONS).map(k =>
+    `<button type="button" data-form="${k}" aria-pressed="${k === bForm}">${k}</button>`).join('');
+  $('#bPitch').querySelectorAll('.slot').forEach(s => s.remove());
+  $('#bPitch').insertAdjacentHTML('beforeend', f.map(([r, x, y], i) => {
+    const p = byNo[bPick[i]];
+    return `<button type="button" class="slot${p ? ' filled' : ''}${i === bActive ? ' active' : ''}" data-slot="${i}" style="left:${x}%;top:${y}%"
+      aria-label="${LINES[r]}${p ? ': ' + esc(p.ad) : ', boş'}"><b>${p ? p.no : '+'}</b><span>${p ? esc(p.ad) : LINES[r]}</span></button>`;
+  }).join(''));
+  $('#bList').innerHTML = players.map(p => {
+    const used = bPick.includes(p.no);
+    return `<button type="button" class="pk${used ? ' used' : ''}" data-pick="${p.no}"><i>${p.no}</i>${esc(p.ad)}<small>${used ? 'Sahada' : esc(p.mevki)}</small></button>`;
+  }).join('');
+  const n = filled();
+  $('#bCount').textContent = `${n} / 9`;
+  $('#bHint').textContent = n === 9 ? 'Kadron hazır' : `${LINES[f[bActive][0]]} için oyuncu seç`;
+  $('#bSend').disabled = n !== 9 || bSending || !KADRO_API;
+  if (!KADRO_API) setMsg('Gönderim yakında açılacak.');
+  saveDraft();
+}
+const nextEmpty = from => { for (let k = 0; k < 9; k++) { const i = (from + k) % 9; if (bPick[i] == null) return i; } return from; };
+const edited = () => { if (KADRO_API) setMsg(''); bRender(); };
+
+$('#bPitch').addEventListener('click', e => {
+  const s = e.target.closest('[data-slot]'); if (!s) return;
+  const i = Number(s.dataset.slot);
+  if (i === bActive && bPick[i] != null) bPick[i] = null; else bActive = i;
+  edited();
+});
+$('#bList').addEventListener('click', e => {
+  const b = e.target.closest('[data-pick]'); if (!b) return;
+  const no = Number(b.dataset.pick);
+  const was = bPick.indexOf(no);
+  if (was >= 0) bPick[was] = null;
+  bPick[bActive] = no;
+  bActive = nextEmpty(bActive);
+  edited();
+});
+$('#bForms').addEventListener('click', e => {
+  const b = e.target.closest('[data-form]'); if (!b) return;
+  bForm = b.dataset.form; edited();
+});
+$('#bClear').addEventListener('click', () => { bPick = Array(9).fill(null); bActive = 0; edited(); });
+$('#bName').addEventListener('input', saveDraft);
+
+$('#bSend').addEventListener('click', async () => {
+  if (filled() !== 9 || bSending || !KADRO_API) return;
+  const entry = { isim: $('#bName').value.trim().slice(0, 30) || 'İsimsiz', dizilis: bForm, oyuncular: [...bPick] };
+  bSending = true; $('#bSend').textContent = 'Gönderiliyor…'; bRender();
+  try {
+    // text/plain gövde: tarayıcı ön kontrol isteği atmaz, Apps Script doğrudan okur
+    const r = await fetch(KADRO_API, { method: 'POST', body: JSON.stringify(entry) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.hata || 'hata');
+    setMsg('Kadron gönderildi. Taraftar kadrolarında görünüyor.', 'ok');
+    wall.unshift({ ...entry, t: Date.now() });
+    renderWall();
+    loadWall();
+  } catch {
+    setMsg('Kadron gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.', 'err');
+  } finally {
+    bSending = false; $('#bSend').textContent = 'Kadromu gönder'; bRender();
+  }
+});
+bRender();
+
+// Taraftar kadroları duvarı
+let wall = [], wShown = 24, wState = 'loading';
+const validEntry = k => k && FORMATIONS[k.dizilis] && Array.isArray(k.oyuncular) && k.oyuncular.length === 9 && k.oyuncular.every(n => n in byNo);
+const fmtTime = t => {
+  const d = new Date(t);
+  return isNaN(d) ? '' : d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' · ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+};
+function wallCard(k) {
+  const f = FORMATIONS[k.dizilis];
+  return `<article class="wc">
+    <div class="wc-h"><b>${esc(k.isim || 'İsimsiz')}</b><span>${esc(k.dizilis)}</span></div>
+    <div class="mini" role="img" aria-label="${esc(k.isim || 'İsimsiz')} kadrosu: ${k.oyuncular.map(n => esc(byNo[n].ad)).join(', ')}">${PITCH_LINES}
+      ${f.map(([, x, y], i) => { const p = byNo[k.oyuncular[i]]; return `<div class="md" style="left:${x}%;top:${y}%"><b>${p.no}</b><span>${esc(p.ad)}</span></div>`; }).join('')}</div>
+    <div class="wc-f">${fmtTime(k.t)}</div>
+  </article>`;
+}
+function renderWall() {
+  const n = wall.length;
+  $('#wCount').textContent = n ? `${n} kadro gönderildi` : 'Herkese açık';
+  // En çok seçilenler
+  const counts = Object.fromEntries(players.map(p => [p.no, 0]));
+  wall.forEach(k => k.oyuncular.forEach(no => counts[no]++));
+  $('#fav').innerHTML = n ? players.slice().sort((a, b) => counts[b.no] - counts[a.no]).map(p => {
+    const pc = Math.round(counts[p.no] / n * 100);
+    return `<li><i>${p.no}</i><span><span class="nm">${esc(p.ad)}</span><span class="track"><span class="fill" style="width:${pc}%"></span></span></span><span class="pc">%${pc}</span></li>`;
+  }).join('') : `<li class="note" style="display:block">İlk kadro gelince burada görünecek.</li>`;
+  // Kadro kartları
+  let html;
+  if (n) html = wall.slice(0, wShown).map(wallCard).join('');
+  else if (!KADRO_API) html = `<div class="wall-state">Taraftar kadroları yakında açılacak.</div>`;
+  else if (wState === 'loading') html = `<div class="wall-state">Kadrolar yükleniyor…</div>`;
+  else if (wState === 'error') html = `<div class="wall-state">Kadrolar şu an yüklenemedi.<button type="button" class="btn btn-ghost" data-retry>Tekrar dene</button></div>`;
+  else html = `<div class="wall-state">Henüz kadro gönderilmedi. İlk gönderen sen ol.<a class="btn btn-primary" href="#kur">Kadronu kur</a></div>`;
+  $('#wall').innerHTML = html;
+  $('#wMore').hidden = n <= wShown;
+  $('#wRefresh').hidden = !KADRO_API;
+}
+async function loadWall() {
+  if (!KADRO_API) { renderWall(); return; }
+  if (!wall.length) { wState = 'loading'; renderWall(); }
+  try {
+    const r = await fetch(KADRO_API);
+    const d = await r.json();
+    if (!d.ok || !Array.isArray(d.kadrolar)) throw new Error('bad');
+    wall = d.kadrolar.filter(validEntry);
+    wState = 'ready';
+  } catch {
+    wState = 'error';
+  }
+  renderWall();
+}
+$('#wall').addEventListener('click', e => { if (e.target.closest('[data-retry]')) loadWall(); });
+$('#wRefresh').addEventListener('click', loadWall);
+$('#wMore').addEventListener('click', () => { wShown += 24; renderWall(); });
+loadWall();
 
 // Forma: oyuncu seçici (varsayılan Evrens)
 let kitNo = 10;
