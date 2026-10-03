@@ -245,15 +245,17 @@ section.block{padding-block:104px 0}
 
 /* Krallık */
 .kings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
-.king{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.king li{display:grid;grid-template-columns:22px 38px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.kings h3{font-size:clamp(1rem,4.4vw,1.25rem);white-space:nowrap}
+.king{--rows:5;list-style:none;margin:0;padding:0 4px 0 0;display:grid;gap:6px;max-height:calc(var(--rows) * 60px + (var(--rows) - 1) * 6px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.king.scrolls{-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 36px),transparent)}
+.king li{display:grid;grid-template-columns:22px 38px minmax(0,1fr) auto;align-items:center;gap:12px;height:60px;padding:0 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
 .king li > i{font-style:normal;color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums}
 .king .no{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#FFFFFF;color:#3A12A8;font:800 .9rem var(--f-display);font-stretch:110%}
 .king .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .king .v{font:800 1.5rem var(--f-display);font-stretch:110%;font-variant-numeric:tabular-nums}
 .king li.top{border-color:var(--gold-line);background:radial-gradient(90% 120% at 0% 50%,rgba(211,180,110,.16),transparent 70%),var(--bg)}
 .king li.top .v,.king li.top > i{color:var(--gold)}
-.king-empty{color:var(--dim);font-size:.92rem;padding:8px 2px}
+.king-empty{color:var(--dim);font-size:.92rem;margin:-6px 0 12px}
 .pc-goal{position:absolute;top:12px;left:12px;font:700 .6rem var(--f-body);font-stretch:80%;letter-spacing:.16em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--gold);color:#1B1033}
 
 /* Beğeni ve paylaşım */
@@ -377,6 +379,10 @@ body:has(dialog[open]){overflow:hidden}
   .pd{padding:18px}
 }
 @media (max-width:440px){
+  .king li{grid-template-columns:16px 32px minmax(0,1fr) auto;gap:8px;padding:0 10px}
+  .king .no{width:32px;height:32px;font-size:.8rem}
+  .king .v{font-size:1.3rem}
+  .kings .panel{padding:18px 14px}
   .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .pc-num{font-size:3.4rem}
   .pd-media{gap:8px}
@@ -466,8 +472,8 @@ body:has(dialog[open]){overflow:hidden}
       </div>
     </div>
     <div class="kings">
-      <div class="panel"><h3 class="display">Gol krallığı</h3><ol class="king" id="kGol"></ol></div>
-      <div class="panel"><h3 class="display">Asist krallığı</h3><ol class="king" id="kAsist"></ol></div>
+      <div class="panel"><h3 class="display">Gol krallığı</h3><p class="king-empty">Turnuva başlayınca güncellenecek.</p><ol class="king" id="kGol"></ol></div>
+      <div class="panel"><h3 class="display">Asist krallığı</h3><p class="king-empty">Turnuva başlayınca güncellenecek.</p><ol class="king" id="kAsist"></ol></div>
     </div>
   </section>
 
@@ -1282,21 +1288,34 @@ kd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') kdStep(-1); if 
 
 // Krallık: gol ve asist sıralaması
 function renderStats() {
-  // Bütün oyuncular listelenir (henüz golü/asisti olmayanlar 0 ile); hepsi 0 iken üstte not görünür
+  // Bütün oyuncular listelenir (henüz golü/asisti olmayanlar 0 ile, en altta).
+  // İki liste de aynı yükseklikte kaydırılır; gol/asisti olanların hepsi kaydırmadan görünür.
+  const val = (p, key) => stats[p.no]?.[key] || 0;
+  const scored = key => players.filter(p => val(p, key) > 0).length;
+  const anyStat = scored('gol') + scored('asist') > 0;
+  document.querySelectorAll('.king-empty').forEach(e => { e.hidden = anyStat; }); // not: sadece hiç istatistik yokken
+  const visible = Math.max(5, scored('gol'), scored('asist'));
   const list = (key, el) => {
-    const val = p => stats[p.no]?.[key] || 0;
-    const rows = players.slice().sort((a, b) => val(b) - val(a) || a.ad.localeCompare(b.ad, 'tr'));
-    const best = val(rows[0]);
-    $(el).innerHTML = (best ? '' : `<li class="king-empty">Turnuva başlayınca güncellenecek.</li>`) + rows.map((p, i) => {
+    const rows = players.slice().sort((a, b) => val(b, key) - val(a, key) || a.ad.localeCompare(b.ad, 'tr'));
+    const best = val(rows[0], key);
+    const ol = $(el);
+    ol.style.setProperty('--rows', visible);
+    ol.innerHTML = rows.map(p => {
+      const v = val(p, key);
       // eşit olanlar aynı sırayı paylaşır (1, 1, 3…); 0 olanlara sıra verilmez
-      const rank = val(p) ? rows.filter(q => val(q) > val(p)).length + 1 : '';
-      const top = best > 0 && val(p) === best;
-      return `<li class="${top ? 'top' : ''}"><i>${rank}</i><span class="no">${p.no}</span><span class="nm">${esc(shortName(p))}</span><span class="v">${val(p)}</span></li>`;
+      const rank = v ? rows.filter(q => val(q, key) > v).length + 1 : '';
+      const top = best > 0 && v === best;
+      return `<li class="${top ? 'top' : ''}"><i>${rank}</i><span class="no">${p.no}</span><span class="nm">${esc(shortName(p))}</span><span class="v">${v}</span></li>`;
     }).join('');
+    ol.scrollTop = 0;
+    fadeKing(ol);
   };
   list('gol', '#kGol');
   list('asist', '#kAsist');
 }
+// Altta kaydırılacak satır kaldıysa listenin dibi hafifçe solar
+const fadeKing = ol => ol.classList.toggle('scrolls', ol.scrollHeight - ol.scrollTop - ol.clientHeight > 2);
+document.querySelectorAll('.king').forEach(ol => ol.addEventListener('scroll', () => fadeKing(ol), { passive: true }));
 renderStats();
 
 // Kadroyu resim olarak: 1080×1920 (hikâye boyutu) tuval; telefonda paylaşım menüsü, bilgisayarda indirme
