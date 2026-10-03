@@ -161,7 +161,14 @@ section.block{padding-block:104px 0}
 .slot b{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1.5px dashed rgba(211,180,110,.75);color:var(--gold);font:500 1.3rem/1 var(--f-body);background:rgba(11,6,25,.4);transition:box-shadow .2s,transform .2s}
 .slot:hover b{transform:scale(1.08)}
 .slot.filled b{border:0;background:#FFFFFF;color:#3A12A8;font:800 1rem var(--f-display);font-stretch:110%;box-shadow:0 6px 14px rgba(0,0,0,.45)}
-.slot.active b{box-shadow:0 0 0 3px var(--viola-hi),0 0 22px rgba(154,114,255,.75)}
+.slot.sel b{box-shadow:0 0 0 3px var(--gold),0 0 22px rgba(211,180,110,.6);transform:scale(1.1)}
+.picking .slot:not(.filled) b{border-color:var(--viola-hi);color:#FFFFFF;animation:slotPulse 1.3s ease-in-out infinite}
+@keyframes slotPulse{50%{box-shadow:0 0 0 5px rgba(154,114,255,.25),0 0 18px rgba(154,114,255,.5)}}
+.b-hint.nudge{animation:nudge .4s}
+@keyframes nudge{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.wc.incoming{visibility:hidden}
+.wc.new{animation:landed 2s ease-out}
+@keyframes landed{0%{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 0 44px rgba(211,180,110,.55)}100%{box-shadow:0 0 0 0 transparent}}
 .slot span{font:700 .62rem var(--f-body);font-stretch:80%;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;text-shadow:0 1px 3px rgba(0,0,0,.8);white-space:nowrap}
 .slot:not(.filled) span{color:rgba(255,255,255,.6)}
 .b-hint{font:800 1.05rem var(--f-display);font-stretch:112%;text-transform:uppercase;margin:0 0 14px}
@@ -179,7 +186,7 @@ section.block{padding-block:104px 0}
 .b-msg.err{color:#FF8A8F}
 @media (max-width:520px){.b-list .pk small{display:none}}
 
-/* Taraftar kadroları */
+/* Sizin kadrolarınız */
 .wall-wrap{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start}
 .fav{position:sticky;top:90px}
 .fav ol{list-style:none;margin:0;padding:0;display:grid;gap:10px}
@@ -315,7 +322,7 @@ body:has(dialog[open]){overflow:hidden}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .ticker-track,.hero-kit .float{animation:none}
+  .ticker-track,.hero-kit .float,.picking .slot:not(.filled) b,.wc.new,.b-hint.nudge{animation:none}
   .pcard,.pc-kit,.btn{transition:none}
 }
 </style>
@@ -326,7 +333,7 @@ body:has(dialog[open]){overflow:hidden}
     <nav class="menu" aria-label="Bölümler">
       <a href="#kadro">Kadro</a>
       <a href="#kur">Kadronu kur</a>
-      <a href="#taraftar">Taraftar kadroları</a>
+      <a href="#taraftar">Sizin kadrolarınız</a>
       <a href="#forma">Forma</a>
       <a href="#grup">Grup</a>
       <a href="#agac">Turnuva ağacı</a>
@@ -420,7 +427,7 @@ body:has(dialog[open]){overflow:hidden}
     <div class="sh">
       <div>
         <div class="kicker label" id="wCount">Herkese açık</div>
-        <h2 class="display">Taraftar kadroları</h2>
+        <h2 class="display">Sizin kadrolarınız</h2>
         <p>Gönderilen bütün kadrolar, en yenisi en üstte.</p>
       </div>
       <button type="button" class="btn btn-ghost" id="wRefresh">Yenile</button>
@@ -552,7 +559,7 @@ document.documentElement.lang = 'tr'; // büyük harfte "i" -> "İ" doğru çevr
 
 /* ===== Düzenlenecek veriler ===== */
 const TEAM = { name: '142C', sinif: '10-C', okul: 'Trabzon Lisesi', instagram: '142_c_futbolkulubu' };
-// Taraftar kadrolarının saklandığı Google E-Tablo'nun Apps Script web uygulaması adresi (…/exec).
+// Gönderilen kadroların saklandığı Google E-Tablo'nun Apps Script web uygulaması adresi (…/exec).
 // Kurulum: takim/kadro-api.gs. Boşken kadro kurulabilir ama gönderilemez.
 const KADRO_API = 'https://script.google.com/macros/s/AKfycbxk6pLUsGGn8j1pwh9M4OBfFWGQuPxnNZW8p9EJOryESmv-4hvrACaWNXrm4ccfLL3mcg/exec';
 
@@ -818,20 +825,38 @@ dlg.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') step(1);
 });
 
-// ===== Kadronu kur + Taraftar kadroları =====
-const FORMATIONS = {
-  '3-3-2': [['KL', 50, 89], ['DF', 20, 68], ['DF', 50, 73], ['DF', 80, 68], ['OS', 24, 46], ['OS', 50, 50], ['OS', 76, 46], ['HC', 22, 21], ['HC', 78, 21]],
-  '3-2-3': [['KL', 50, 89], ['DF', 20, 68], ['DF', 50, 73], ['DF', 80, 68], ['OS', 32, 47], ['OS', 68, 47], ['HC', 18, 24], ['HC', 50, 18], ['HC', 82, 24]],
-  '4-3-1': [['KL', 50, 89], ['DF', 14, 66], ['DF', 38, 73], ['DF', 62, 73], ['DF', 86, 66], ['OS', 24, 45], ['OS', 50, 49], ['OS', 76, 45], ['HC', 50, 19]],
+// ===== Kadronu kur + Sizin kadrolarınız =====
+// Dizilişler: kaleci + sıra sıra (rol, kişi sayısı). Hücum yukarıda.
+const LAYOUTS = {
+  '3-3-2': [['DF', 3], ['OS', 3], ['HC', 2]],
+  '3-2-3': [['DF', 3], ['OS', 2], ['HC', 3]],
+  '4-3-1': [['DF', 4], ['OS', 3], ['HC', 1]],
+  '3-4-1': [['DF', 3], ['OS', 4], ['HC', 1]],
+  '4-2-2': [['DF', 4], ['OS', 2], ['HC', 2]],
+  '2-4-2': [['DF', 2], ['OS', 4], ['HC', 2]],
+  '2-3-3': [['DF', 2], ['OS', 3], ['HC', 3]],
+  '3-2-2-1': [['DF', 3], ['OS', 2], ['OS', 2], ['HC', 1]],
 };
+const ROW_X = { 1: [50], 2: [28, 72], 3: [20, 50, 80], 4: [14, 38, 62, 86] };
+const FORMATIONS = Object.fromEntries(Object.entries(LAYOUTS).map(([k, rows]) => {
+  const ys = rows.length === 3 ? [71, 47, 21] : [72, 54, 36, 18];
+  const slots = [['KL', 50, 89]];
+  rows.forEach(([r, n], li) => ROW_X[n].forEach((x, i) => {
+    const outer = n >= 3 && (i === 0 || i === n - 1);
+    const dy = !outer ? 0 : r === 'DF' ? -4 : r === 'HC' ? 4 : -3;
+    slots.push([r, x, ys[li] + dy]);
+  }));
+  return [k, slots];
+}));
 const PITCH_LINES = `<svg class="lines" viewBox="0 0 60 80" aria-hidden="true" fill="none" stroke="rgba(211,180,110,.38)" stroke-width=".4">
   <rect x="2" y="2" width="56" height="76"/><line x1="2" y1="40" x2="58" y2="40"/><circle cx="30" cy="40" r="7"/>
   <rect x="16" y="2" width="28" height="11"/><rect x="23" y="2" width="14" height="4.5"/>
   <rect x="16" y="67" width="28" height="11"/><rect x="23" y="73.5" width="14" height="4.5"/></svg>`;
 $('#bPitch').innerHTML = PITCH_LINES;
 
+// Önce oyuncuya, sonra mevkiye dokunulur. bSel: seçili oyuncunun numarası.
 const DRAFT_KEY = '142c-kadro';
-let bForm = '3-3-2', bPick = Array(9).fill(null), bActive = 0, bSending = false;
+let bForm = '3-3-2', bPick = Array(9).fill(null), bSel = null, bSending = false;
 try {
   const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
   if (d && FORMATIONS[d.form] && Array.isArray(d.pick) && d.pick.length === 9) {
@@ -847,69 +872,124 @@ function bRender() {
   $('#bForms').innerHTML = Object.keys(FORMATIONS).map(k =>
     `<button type="button" data-form="${k}" aria-pressed="${k === bForm}">${k}</button>`).join('');
   $('#bPitch').querySelectorAll('.slot').forEach(s => s.remove());
+  $('#bPitch').classList.toggle('picking', bSel != null);
   $('#bPitch').insertAdjacentHTML('beforeend', f.map(([r, x, y], i) => {
     const p = byNo[bPick[i]];
-    return `<button type="button" class="slot${p ? ' filled' : ''}${i === bActive ? ' active' : ''}" data-slot="${i}" style="left:${x}%;top:${y}%"
+    const cls = (p ? ' filled' : '') + (p && p.no === bSel ? ' sel' : '');
+    return `<button type="button" class="slot${cls}" data-slot="${i}" style="left:${x}%;top:${y}%"
       aria-label="${LINES[r]}${p ? ': ' + esc(p.ad) : ', boş'}"><b>${p ? p.no : '+'}</b><span>${p ? esc(p.ad) : LINES[r]}</span></button>`;
   }).join(''));
   $('#bList').innerHTML = players.map(p => {
     const used = bPick.includes(p.no);
-    return `<button type="button" class="pk${used ? ' used' : ''}" data-pick="${p.no}"><i>${p.no}</i>${esc(p.ad)}<small>${used ? 'Sahada' : esc(p.mevki)}</small></button>`;
+    return `<button type="button" class="pk${used ? ' used' : ''}" data-pick="${p.no}" aria-pressed="${p.no === bSel}"><i>${p.no}</i>${esc(p.ad)}<small>${used ? 'Sahada' : esc(p.mevki)}</small></button>`;
   }).join('');
   const n = filled();
   $('#bCount').textContent = `${n} / 9`;
-  $('#bHint').textContent = n === 9 ? 'Kadron hazır' : `${LINES[f[bActive][0]]} için oyuncu seç`;
+  const sel = byNo[bSel];
+  $('#bHint').textContent = sel
+    ? (bPick.includes(sel.no) ? `${sel.ad} · yeni mevkisine dokun` : `${sel.ad} · bir mevkiye dokun`)
+    : n === 9 ? 'Kadron hazır' : 'Önce bir oyuncu seç';
   $('#bSend').disabled = n !== 9 || bSending || !KADRO_API;
   if (!KADRO_API) setMsg('Gönderim yakında açılacak.');
   saveDraft();
 }
-const nextEmpty = from => { for (let k = 0; k < 9; k++) { const i = (from + k) % 9; if (bPick[i] == null) return i; } return from; };
-const edited = () => { if (KADRO_API) setMsg(''); bRender(); };
+const edited = () => { if (KADRO_API && !bSending) setMsg(''); bRender(); };
 
-$('#bPitch').addEventListener('click', e => {
-  const s = e.target.closest('[data-slot]'); if (!s) return;
-  const i = Number(s.dataset.slot);
-  if (i === bActive && bPick[i] != null) bPick[i] = null; else bActive = i;
-  edited();
-});
 $('#bList').addEventListener('click', e => {
   const b = e.target.closest('[data-pick]'); if (!b) return;
   const no = Number(b.dataset.pick);
-  const was = bPick.indexOf(no);
-  if (was >= 0) bPick[was] = null;
-  bPick[bActive] = no;
-  bActive = nextEmpty(bActive);
+  bSel = bSel === no ? null : no;
+  edited();
+});
+$('#bPitch').addEventListener('click', e => {
+  const s = e.target.closest('[data-slot]'); if (!s) return;
+  const i = Number(s.dataset.slot);
+  if (bSel != null) {
+    const from = bPick.indexOf(bSel);
+    if (from === i) bPick[i] = null;                 // kendi yerine tekrar dokununca sahadan çıkar
+    else { if (from >= 0) bPick[from] = bPick[i]; bPick[i] = bSel; } // yerleştir; doluysa yer değiştir
+    bSel = null;
+  } else if (bPick[i] != null) {
+    bSel = bPick[i];                                 // sahadaki oyuncuyu taşımak için seç
+  } else {
+    const h = $('#bHint'); h.classList.remove('nudge'); void h.offsetWidth; h.classList.add('nudge');
+    return;
+  }
   edited();
 });
 $('#bForms').addEventListener('click', e => {
   const b = e.target.closest('[data-form]'); if (!b) return;
   bForm = b.dataset.form; edited();
 });
-$('#bClear').addEventListener('click', () => { bPick = Array(9).fill(null); bActive = 0; edited(); });
+$('#bClear').addEventListener('click', () => { bPick = Array(9).fill(null); bSel = null; edited(); });
 $('#bName').addEventListener('input', saveDraft);
+
+// Gönderilen kadro: saha kopyası yerinden kalkar, sayfa aşağı kayar, kopya yeni kartın yerine iner
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const waitScroll = () => new Promise(res => {
+  let done = false; const fin = () => { if (!done) { done = true; res(); } };
+  addEventListener('scrollend', fin, { once: true }); setTimeout(fin, 950);
+});
+async function flyToWall(entry, clearBuilder) {
+  const src = $('#bPitch'), r = src.getBoundingClientRect();
+  const ghost = src.cloneNode(true);
+  ghost.removeAttribute('id');
+  ghost.querySelectorAll('.slot').forEach(s => s.classList.remove('sel'));
+  Object.assign(ghost.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px',
+    margin: '0', zIndex: '60', pointerEvents: 'none', transformOrigin: '0 0', boxShadow: '0 30px 70px rgba(0,0,0,.65)' });
+  wall.unshift(entry);
+  wState = 'ready';
+  renderWall();
+  const card = $('#wall .wc');
+  if (reduceMotion() || !card) {
+    clearBuilder();
+    $('#taraftar').scrollIntoView({ block: 'start' });
+    card?.classList.add('new');
+    return;
+  }
+  card.classList.add('incoming');
+  document.body.append(ghost);
+  clearBuilder();
+  const lift = 'translateY(-14px) scale(1.03)';
+  ghost.animate([{ transform: 'none' }, { transform: lift }], { duration: 260, easing: 'ease-out', fill: 'forwards' });
+  $('#taraftar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  await waitScroll();
+  const t = card.querySelector('.mini').getBoundingClientRect();
+  const dx = t.left - r.left, dy = t.top - r.top, s = t.width / r.width;
+  await ghost.animate([{ transform: lift }, { transform: `translate(${dx}px, ${dy}px) scale(${s})` }],
+    { duration: 820, easing: 'cubic-bezier(.65,0,.25,1)', fill: 'forwards' }).finished.catch(() => {});
+  card.classList.remove('incoming');
+  card.classList.add('new');
+  await ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, fill: 'forwards' }).finished.catch(() => {});
+  ghost.remove();
+}
 
 $('#bSend').addEventListener('click', async () => {
   if (filled() !== 9 || bSending || !KADRO_API) return;
   const entry = { isim: $('#bName').value.trim().slice(0, 30) || 'İsimsiz', dizilis: bForm, oyuncular: [...bPick] };
-  bSending = true; $('#bSend').textContent = 'Gönderiliyor…'; bRender();
+  bSending = true; bSel = null; $('#bSend').textContent = 'Gönderiliyor…'; bRender();
   try {
     // text/plain gövde: tarayıcı ön kontrol isteği atmaz, Apps Script doğrudan okur
     const r = await fetch(KADRO_API, { method: 'POST', body: JSON.stringify(entry) });
     const d = await r.json();
     if (!d.ok) throw new Error(d.hata || 'hata');
-    setMsg('Kadron gönderildi. Taraftar kadrolarında görünüyor.', 'ok');
-    wall.unshift({ ...entry, t: Date.now() });
-    renderWall();
-    loadWall();
-  } catch {
-    setMsg('Kadron gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.', 'err');
-  } finally {
+    bSending = false; $('#bSend').textContent = 'Kadromu gönder';
+    await flyToWall({ ...entry, t: Date.now() }, () => {
+      bPick = Array(9).fill(null); bSel = null;
+      bRender();
+      setMsg('Kadron gönderildi.', 'ok');
+    });
+    setTimeout(loadWall, 2500);
+  } catch (err) {
     bSending = false; $('#bSend').textContent = 'Kadromu gönder'; bRender();
+    setMsg(err && err.message === 'gecersiz'
+      ? 'Bu kadro kaydedilemedi. Lütfen daha sonra tekrar dene.'
+      : 'Kadron gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.', 'err');
   }
 });
 bRender();
 
-// Taraftar kadroları duvarı
+// Sizin kadrolarınız duvarı
 let wall = [], wShown = 24, wState = 'loading';
 // Google E-Tablo "3-3-2" gibi dizilişleri tarihe çevirebiliyor ("Sun Mar 03 2002 …" = 3-3-2): geri çevir
 const MONTHS = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
@@ -953,7 +1033,7 @@ function renderWall() {
   // Kadro kartları
   let html;
   if (n) html = wall.slice(0, wShown).map(wallCard).join('');
-  else if (!KADRO_API) html = `<div class="wall-state">Taraftar kadroları yakında açılacak.</div>`;
+  else if (!KADRO_API) html = `<div class="wall-state">Kadrolar yakında burada görünecek.</div>`;
   else if (wState === 'loading') html = `<div class="wall-state">Kadrolar yükleniyor…</div>`;
   else if (wState === 'error') html = `<div class="wall-state">Kadrolar şu an yüklenemedi.<button type="button" class="btn btn-ghost" data-retry>Tekrar dene</button></div>`;
   else html = `<div class="wall-state">Henüz kadro gönderilmedi. İlk gönderen sen ol.<a class="btn btn-primary" href="#kur">Kadronu kur</a></div>`;
