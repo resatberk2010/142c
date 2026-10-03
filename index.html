@@ -206,7 +206,7 @@ section.block{padding-block:104px 0}
 .md{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
 .md b{width:24px;height:24px;border-radius:50%;background:#FFFFFF;color:#3A12A8;display:grid;place-items:center;font:800 .66rem var(--f-display);font-stretch:110%;box-shadow:0 3px 8px rgba(0,0,0,.45)}
 .md span{font:700 .5rem var(--f-body);font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.8);white-space:nowrap}
-.wc-f{font-size:.74rem;color:var(--dim)}
+.wc-note{margin:0;font:italic 400 1.05rem/1.3 var(--f-serif);color:var(--muted);overflow-wrap:anywhere}
 .wall-state{grid-column:1/-1;padding:32px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line-2);border-radius:16px;display:grid;gap:12px;justify-items:center}
 .wall-more{display:flex;justify-content:center;margin-top:20px}
 
@@ -415,7 +415,7 @@ body:has(dialog[open]){overflow:hidden}
           <div class="b-list" id="bList" role="group" aria-label="Oyuncu seç"></div>
         </div>
         <div class="panel b-send">
-          <div class="field"><label for="bName">Adın</label><input id="bName" maxlength="30" placeholder="Kadroda görünecek isim" autocomplete="off"></div>
+          <div class="field"><label for="bName">Not</label><input id="bName" maxlength="80" placeholder="Kadrona bir not ekle (isteğe bağlı)" autocomplete="off"></div>
           <button type="button" class="btn btn-primary" id="bSend" disabled>Kadromu gönder</button>
           <p class="b-msg" id="bMsg" aria-live="polite"></p>
         </div>
@@ -855,15 +855,9 @@ const PITCH_LINES = `<svg class="lines" viewBox="0 0 60 80" aria-hidden="true" f
 $('#bPitch').innerHTML = PITCH_LINES;
 
 // Önce oyuncuya, sonra mevkiye dokunulur. bSel: seçili oyuncunun numarası.
-const DRAFT_KEY = '142c-kadro';
+// Sayfa her açıldığında boş başlar (seçimler ve not saklanmaz)
 let bForm = '3-3-2', bPick = Array(9).fill(null), bSel = null, bSending = false;
-try {
-  const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
-  if (d && FORMATIONS[d.form] && Array.isArray(d.pick) && d.pick.length === 9) {
-    bForm = d.form; bPick = d.pick.map(n => (n in byNo ? n : null)); $('#bName').value = d.name || '';
-  }
-} catch {}
-const saveDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ form: bForm, pick: bPick, name: $('#bName').value })); } catch {} };
+try { localStorage.removeItem('142c-kadro'); } catch {} // eski sürümün kaydettiği taslağı temizle
 const filled = () => bPick.filter(n => n != null).length;
 const setMsg = (text, kind = '') => { $('#bMsg').textContent = text; $('#bMsg').className = 'b-msg' + (kind ? ' ' + kind : ''); };
 
@@ -891,7 +885,6 @@ function bRender() {
     : n === 9 ? 'Kadron hazır' : 'Önce bir oyuncu seç';
   $('#bSend').disabled = n !== 9 || bSending || !KADRO_API;
   if (!KADRO_API) setMsg('Gönderim yakında açılacak.');
-  saveDraft();
 }
 const edited = () => { if (KADRO_API && !bSending) setMsg(''); bRender(); };
 
@@ -922,7 +915,6 @@ $('#bForms').addEventListener('click', e => {
   bForm = b.dataset.form; edited();
 });
 $('#bClear').addEventListener('click', () => { bPick = Array(9).fill(null); bSel = null; edited(); });
-$('#bName').addEventListener('input', saveDraft);
 
 // Gönderilen kadro: saha kopyası yerinden kalkar, sayfa aşağı kayar, kopya yeni kartın yerine iner
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -966,7 +958,8 @@ async function flyToWall(entry, clearBuilder) {
 
 $('#bSend').addEventListener('click', async () => {
   if (filled() !== 9 || bSending || !KADRO_API) return;
-  const entry = { isim: $('#bName').value.trim().slice(0, 30) || 'İsimsiz', dizilis: bForm, oyuncular: [...bPick] };
+  // "isim" alanı artık kadronun notunu taşır (tablodaki sütun adı değişmedi)
+  const entry = { isim: $('#bName').value.trim().slice(0, 80), dizilis: bForm, oyuncular: [...bPick] };
   bSending = true; bSel = null; $('#bSend').textContent = 'Gönderiliyor…'; bRender();
   try {
     // text/plain gövde: tarayıcı ön kontrol isteği atmaz, Apps Script doğrudan okur
@@ -975,7 +968,7 @@ $('#bSend').addEventListener('click', async () => {
     if (!d.ok) throw new Error(d.hata || 'hata');
     bSending = false; $('#bSend').textContent = 'Kadromu gönder';
     await flyToWall({ ...entry, t: Date.now() }, () => {
-      bPick = Array(9).fill(null); bSel = null;
+      bPick = Array(9).fill(null); bSel = null; $('#bName').value = '';
       bRender();
       setMsg('Kadron gönderildi.', 'ok');
     });
@@ -1013,11 +1006,13 @@ const fmtTime = t => {
 };
 function wallCard(k) {
   const f = FORMATIONS[k.dizilis];
+  const note = String(k.isim || '').trim();
+  const hasNote = note && note !== 'İsimsiz'; // eski kayıtlarda boş not "İsimsiz" olarak saklanıyordu
   return `<article class="wc">
-    <div class="wc-h"><b>${esc(k.isim || 'İsimsiz')}</b><span>${esc(k.dizilis)}</span></div>
-    <div class="mini" role="img" aria-label="${esc(k.isim || 'İsimsiz')} kadrosu: ${k.oyuncular.map(n => esc(byNo[n].ad)).join(', ')}">${PITCH_LINES}
+    <div class="wc-h"><b>${esc(k.dizilis)}</b><span>${fmtTime(k.t)}</span></div>
+    <div class="mini" role="img" aria-label="${esc(k.dizilis)} kadrosu: ${k.oyuncular.map(n => esc(byNo[n].ad)).join(', ')}">${PITCH_LINES}
       ${f.map(([, x, y], i) => { const p = byNo[k.oyuncular[i]]; return `<div class="md" style="left:${x}%;top:${y}%"><b>${p.no}</b><span>${esc(p.ad)}</span></div>`; }).join('')}</div>
-    <div class="wc-f">${fmtTime(k.t)}</div>
+    ${hasNote ? `<p class="wc-note">${esc(note)}</p>` : ''}
   </article>`;
 }
 function renderWall() {
