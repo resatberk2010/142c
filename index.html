@@ -13,12 +13,12 @@
 <meta property="og:site_name" content="142C">
 <meta property="og:title" content="142C · Trabzon Lisesi 10-C">
 <meta property="og:description" content="Bir sınıf, bir takım, tek renk: mor. Kadroyu gör, kendi ilk 9'unu kur.">
-<meta property="og:url" content="https://resatberk2010.github.io/oyun/">
-<meta property="og:image" content="https://resatberk2010.github.io/oyun/og.png">
+<meta property="og:url" content="https://resatberk2010.github.io/142c/">
+<meta property="og:image" content="https://resatberk2010.github.io/142c/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://resatberk2010.github.io/oyun/og.png">
+<meta name="twitter:image" content="https://resatberk2010.github.io/142c/og.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 150'><polygon points='50,3 95,52 50,147 5,52' fill='white'/><polygon points='17.3,78 82.7,78 50,147' fill='%234A10B0'/><g transform='translate(50 46) scale(.6) translate(-50 -54)' fill='%23E0222B' stroke='%23E0222B' stroke-width='0'><path d='M50 18 C59 30 61 44 54 58 H46 C39 44 41 30 50 18 Z'/><path d='M45 62 C32 65 20 57 20 45 C20 35 30 31 35 38 C29 41 30 50 38 53 C42 55 44 57 45 58 Z'/><path d='M55 62 C68 65 80 57 80 45 C80 35 70 31 65 38 C71 41 70 50 62 53 C58 55 56 57 55 58 Z'/><rect x='35' y='58' width='30' height='7'/><path d='M45 65 L43 80 C39 81 36 85 38 89 L50 85 L62 89 C64 85 61 81 57 80 L55 65 Z'/></g><polygon points='50,3 95,52 50,147 5,52' fill='none' stroke='%23C9A75A' stroke-width='6'/></svg>">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -685,7 +685,7 @@ const lineup = [
 const KIT = { body: '#4A10B0', white: '#F6F4FB', red: '#E0222B' };
 // Sıradaki maç: tarih 'YYYY-AA-GG', saat 'SS:DD'. Boşken girişte "Kura henüz çekilmedi" yazar.
 const NEXT_MATCH = { tarih: '', saat: '', rakip: '' };
-const SITE_URL = 'resatberk2010.github.io/oyun';
+const SITE_URL = 'resatberk2010.github.io/142c';
 let stats = {}; // forma no -> { gol, asist }; Google Tablodaki "İstatistik" sayfasından gelir
 /* ================================= */
 
@@ -1282,14 +1282,17 @@ kd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') kdStep(-1); if 
 
 // Krallık: gol ve asist sıralaması
 function renderStats() {
+  // Bütün oyuncular listelenir (henüz golü/asisti olmayanlar 0 ile); hepsi 0 iken üstte not görünür
   const list = (key, el) => {
-    const rows = players.filter(p => (stats[p.no]?.[key] || 0) > 0)
-      .sort((a, b) => stats[b.no][key] - stats[a.no][key] || a.ad.localeCompare(b.ad, 'tr'));
-    $(el).innerHTML = rows.length ? rows.map((p, i) => {
-      const rank = i && stats[rows[i - 1].no][key] === stats[p.no][key] ? '' : i + 1; // eşitlerde sıra tekrarlanmaz
-      const top = stats[p.no][key] === stats[rows[0].no][key];
-      return `<li class="${top ? 'top' : ''}"><i>${rank}</i><span class="no">${p.no}</span><span class="nm">${esc(shortName(p))}</span><span class="v">${stats[p.no][key]}</span></li>`;
-    }).join('') : `<li class="king-empty">Turnuva başlayınca güncellenecek.</li>`;
+    const val = p => stats[p.no]?.[key] || 0;
+    const rows = players.slice().sort((a, b) => val(b) - val(a) || a.ad.localeCompare(b.ad, 'tr'));
+    const best = val(rows[0]);
+    $(el).innerHTML = (best ? '' : `<li class="king-empty">Turnuva başlayınca güncellenecek.</li>`) + rows.map((p, i) => {
+      // eşit olanlar aynı sırayı paylaşır (1, 1, 3…); 0 olanlara sıra verilmez
+      const rank = val(p) ? rows.filter(q => val(q) > val(p)).length + 1 : '';
+      const top = best > 0 && val(p) === best;
+      return `<li class="${top ? 'top' : ''}"><i>${rank}</i><span class="no">${p.no}</span><span class="nm">${esc(shortName(p))}</span><span class="v">${val(p)}</span></li>`;
+    }).join('');
   };
   list('gol', '#kGol');
   list('asist', '#kAsist');
