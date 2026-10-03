@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>142C Sınıf Takımı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Instrument+Serif:ital@0;1&family=Barlow:wght@800&family=Barlow+Condensed:wght@700&family=Graduate&family=Saira+Condensed:wght@700&display=swap">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+/* Layout: koyu mor kulüp sitesi. Tam genişlik hero (sol: dev 142C, sağ: forma), altın ince çizgiler, ortalanmış 1180px kap.
+   Tek görünüm: bilinçli olarak yalnızca koyu tema. */
+:root{
+  color-scheme:dark;
+  --void:#0B0619; --bg:#120A28; --panel:#1A0F37; --panel-2:#22144A; --line:#2D1F57; --line-2:#3D2C70;
+  --text:#F4F0FF; --muted:#A99CCB; --dim:#7E70A8;
+  --viola:#5B23D8; --viola-hi:#9A72FF; --gold:#D3B46E; --gold-line:rgba(211,180,110,.32); --lily:#E3343C;
+  --f-display:'Archivo','Arial Black',sans-serif;
+  --f-serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --f-body:'Archivo','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:24px}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+.display{font-family:var(--f-display);font-stretch:125%;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:.92}
+.label{font-family:var(--f-body);font-stretch:75%;font-weight:600;text-transform:uppercase;letter-spacing:.22em;font-size:.74rem;color:var(--gold)}
+.serif{font-family:var(--f-serif);font-style:italic;font-weight:400}
+
+/* Üst bar */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(14,8,32,.8);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px 28px;flex-wrap:wrap;padding-block:12px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand svg{width:24px;height:auto;display:block;flex:none}
+.brand b{display:block;font:800 1.25rem/1 var(--f-display);font-stretch:125%;letter-spacing:.01em}
+.brand small{display:block;margin-top:3px;font:600 .62rem/1 var(--f-body);font-stretch:75%;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+nav.menu{display:flex;gap:2px;margin-left:auto;overflow-x:auto;max-width:100%;scrollbar-width:none}
+nav.menu a{position:relative;font:600 .76rem var(--f-body);font-stretch:80%;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;padding:8px 12px;white-space:nowrap;color:var(--muted);transition:color .2s}
+nav.menu a::after{content:"";position:absolute;left:12px;right:12px;bottom:2px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .25s}
+nav.menu a:hover{color:var(--text)}
+nav.menu a:hover::after{transform:scaleX(1)}
+.draft{font:600 .62rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-line);border-radius:999px;padding:4px 10px;white-space:nowrap}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;isolation:isolate;
+  background:radial-gradient(55% 75% at 74% 42%,rgba(122,70,255,.38),transparent 70%),radial-gradient(45% 60% at 0% 0%,rgba(91,35,216,.32),transparent 70%),linear-gradient(180deg,#170C36,#0E0722)}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(90deg,transparent 0 58px,rgba(255,255,255,.03) 58px 59px)}
+.hero .mark{position:absolute;z-index:-1;left:-6%;top:8%;width:min(560px,60vw);opacity:.05}
+.hero .mark svg{width:100%;height:auto;display:block}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:24px 40px;align-items:center;padding-block:72px 64px}
+.kicker{display:flex;align-items:center;gap:14px}
+.kicker::before{content:"";width:36px;height:1px;background:var(--gold)}
+.hero h1{font-size:clamp(4.5rem,calc(13.5vw - 10px),9.6rem);margin:18px 0 22px;line-height:.8;
+  background:linear-gradient(180deg,#FFFFFF 35%,#C7B5FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.slogan{font-size:clamp(1.6rem,3.2vw,2.3rem);line-height:1.15;color:var(--text);max-width:20ch;margin:0}
+.slogan em{color:var(--viola-hi);font-style:italic}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:999px;font:600 .74rem var(--f-body);font-stretch:85%;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s,border-color .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:linear-gradient(180deg,#6E3AF2,#4A17C4);color:#FFFFFF;box-shadow:0 12px 32px -12px rgba(110,58,242,.9),inset 0 1px 0 rgba(255,255,255,.2)}
+.btn-ghost{border-color:var(--gold-line);color:var(--gold);background:rgba(211,180,110,.04)}
+.btn-ghost:hover{border-color:var(--gold)}
+.status{margin-top:30px;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(211,180,110,.15)}
+.hero-kit{position:relative;justify-self:center;width:min(340px,100%)}
+.hero-kit svg{width:100%;height:auto;display:block;filter:drop-shadow(0 40px 40px rgba(0,0,0,.55))}
+.hero-kit::after{content:"";position:absolute;left:18%;right:18%;bottom:-14px;height:28px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6),transparent)}
+.hero-kit .float{animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+
+/* Kayan şerit */
+.ticker{background:var(--void);border-block:1px solid var(--line);overflow:hidden;white-space:nowrap}
+.ticker-track{display:inline-flex;gap:0;padding-block:16px;animation:ticker 40s linear infinite}
+.ticker span{display:inline-flex;align-items:center;gap:28px;padding-right:28px;font:800 .95rem var(--f-display);font-stretch:125%;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ticker span svg{width:12px;height:auto}
+@keyframes ticker{to{transform:translateX(-50%)}}
+
+/* Bölümler */
+section.block{padding-block:104px 0}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:20px 32px;flex-wrap:wrap;margin-bottom:40px}
+.sh h2{font-size:clamp(2.6rem,6vw,4.4rem);margin-top:14px}
+.sh p{margin:14px 0 0;color:var(--muted);max-width:50ch}
+.band{background:linear-gradient(180deg,var(--void),#130A2C 60%,var(--bg));border-block:1px solid var(--line);margin-top:104px;padding-bottom:104px}
+.band section.block{padding-top:96px}
+
+/* Segment filtre */
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.seg button{font:600 .72rem var(--f-body);font-stretch:80%;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:none;border:0;padding:9px 16px;border-radius:999px;cursor:pointer;transition:color .2s,background .2s}
+.seg button:hover{color:var(--text)}
+.seg button[aria-pressed="true"]{background:var(--viola);color:#FFFFFF;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+
+/* Kadro */
+.squad{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;align-items:start}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+.pcard{position:relative;display:flex;flex-direction:column;justify-content:flex-end;aspect-ratio:3/4.2;max-width:100%;border-radius:16px;overflow:hidden;padding:0;border:1px solid var(--line);cursor:pointer;text-align:left;color:var(--text);font:inherit;
+  background:radial-gradient(90% 60% at 50% 28%,#3B1F88 0%,#1D1040 62%,#140B2E 100%);transition:transform .3s,border-color .3s,box-shadow .3s}
+.pcard:hover{transform:translateY(-5px);border-color:var(--gold-line);box-shadow:0 22px 44px -18px rgba(110,58,242,.75)}
+.pc-num{position:absolute;top:8px;right:12px;font:800 4.6rem/1 var(--f-display);font-stretch:125%;color:transparent;-webkit-text-stroke:1px rgba(211,180,110,.32)}
+.pc-kit{position:absolute;left:12%;right:12%;top:12%;transition:transform .4s}
+.pc-kit svg{width:100%;height:auto;display:block;filter:drop-shadow(0 14px 14px rgba(0,0,0,.5))}
+.pcard:hover .pc-kit{transform:scale(1.04)}
+.pc-meta{position:relative;display:grid;gap:4px;padding:40px 14px 14px;background:linear-gradient(180deg,transparent,rgba(9,4,22,.92) 52%)}
+.pc-pos{font:600 .64rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.pc-name{font-size:.86rem;line-height:1.2;color:var(--muted)}
+.pc-name b{display:block;margin-top:2px;font:800 1rem/1.05 var(--f-display);font-stretch:112%;text-transform:uppercase;color:var(--text)}
+.pc-meta{container-type:inline-size}
+.pc-name b.long{font-size:min(.88rem,calc(100cqi / (var(--n) * .68)));font-stretch:75%;letter-spacing:0}
+.pc-name b,.pd-info h3{overflow-wrap:anywhere}
+.lineup{position:sticky;top:90px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+.lineup h3{font-size:1.35rem}
+.lineup .sub{margin:6px 0 16px;color:var(--muted);font-size:.9rem}
+.pitch{position:relative;width:100%;max-width:100%;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:repeating-linear-gradient(180deg,#1F1048 0 12.5%,#241352 12.5% 25%);box-shadow:inset 0 0 60px rgba(0,0,0,.45)}
+.pitch svg.lines{position:absolute;inset:0;width:100%;height:100%}
+.dot{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+.dot b{width:40px;height:40px;border-radius:50%;background:#FFFFFF;color:#3A12A8;display:grid;place-items:center;font:800 1rem var(--f-display);font-stretch:110%;box-shadow:0 6px 14px rgba(0,0,0,.45);transition:transform .2s}
+.dot:hover b{transform:scale(1.1)}
+.dot.gk b{box-shadow:0 0 0 3px var(--gold),0 6px 14px rgba(0,0,0,.45)}
+.dot span{font:700 .62rem var(--f-body);font-stretch:80%;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;text-shadow:0 1px 3px rgba(0,0,0,.8);white-space:nowrap}
+
+/* Forma */
+.kit{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.6fr);gap:32px;align-items:start}
+.kit-stage{position:relative;overflow:hidden;border-radius:22px;border:1px solid var(--line);padding:44px 28px 26px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;
+  background:radial-gradient(70% 55% at 50% 8%,#432C92 0%,#1A1138 58%,#08050F 100%)}
+.kit-stage::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 60px,rgba(255,255,255,.022) 60px 61px);pointer-events:none}
+.kit-stage::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:34%;background:radial-gradient(60% 50% at 50% 100%,rgba(150,120,255,.18),transparent 70%);pointer-events:none}
+.kit-stage figure{margin:0;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px}
+.kit-stage svg{width:100%;height:auto;display:block;filter:drop-shadow(0 30px 26px rgba(0,0,0,.65))}
+.kit-stage figcaption{font:600 .68rem var(--f-body);font-stretch:75%;letter-spacing:.24em;text-transform:uppercase;color:#D9D0F7}
+.picker-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.picker-h .label{text-align:right;min-width:0}
+.picker-h b{font:800 1.1rem var(--f-display);font-stretch:115%;text-transform:uppercase}
+.picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.pk{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--muted);font:500 .86rem var(--f-body);cursor:pointer;text-align:left;transition:border-color .2s,color .2s,background .2s}
+.pk i{font:800 .9rem var(--f-display);font-stretch:110%;font-style:normal;color:var(--gold);min-width:22px;font-variant-numeric:tabular-nums}
+.pk:hover{border-color:var(--line-2);color:var(--text)}
+.pk[aria-pressed="true"]{background:linear-gradient(180deg,#5F2BE0,#4517B8);border-color:transparent;color:#FFFFFF}
+.pk[aria-pressed="true"] i{color:#FFFFFF}
+.specs{margin:24px 0 0;display:grid;border-top:1px solid var(--line)}
+.specs div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.specs dt{font:600 .66rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);padding-top:3px}
+.specs dd{margin:0;font-size:.92rem}
+
+/* Panel ortak */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px}
+.panel h3{font-size:1.25rem;margin-bottom:16px}
+.note{margin:14px 0 0;font-size:.88rem;color:var(--dim)}
+
+/* Grup */
+.group{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:20px;align-items:start}
+.slots{display:grid;gap:8px;list-style:none;margin:0;padding:0}
+.slots li{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:12px;border:1px dashed var(--line-2);color:var(--dim)}
+.slots li.us{border:1px solid transparent;background:linear-gradient(90deg,rgba(91,35,216,.55),rgba(91,35,216,.12));color:var(--text);font-weight:700}
+.slots li svg{width:18px;flex:none}
+.slots li i{font-style:normal;width:18px;text-align:center;font-weight:700}
+.fix{display:grid;gap:8px}
+.fix-row{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:13px 16px;border-radius:12px;border:1px dashed var(--line-2)}
+.fix-row .k{font:600 .66rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.fix-row .t{font-weight:700}
+.fix-row .t em{font-style:normal;color:var(--dim);font-weight:400}
+.fix-row .d{font:600 .66rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+
+/* Turnuva ağacı */
+.bracket-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px}
+.bracket{display:grid;grid-template-columns:repeat(5,minmax(160px,1fr));column-gap:28px;min-width:940px}
+.rnd{display:flex;flex-direction:column}
+.rnd h4{font:600 .68rem var(--f-body);font-stretch:75%;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;text-align:center}
+.rnd-body{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:14px;min-height:660px}
+.grp{background:var(--bg);border:1px solid var(--line);border-radius:10px;position:relative}
+.grp h5{margin:0;padding:8px 12px;font:800 .78rem var(--f-display);font-stretch:115%;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line)}
+.grp div{padding:6px 12px;font-size:.84rem;color:var(--dim)}
+.grp div + div{border-top:1px solid var(--line)}
+.grp .us{color:#FFFFFF;font-weight:700;background:rgba(91,35,216,.45)}
+.grp::after{content:"";position:absolute;right:-29px;top:50%;width:28px;border-top:1px solid var(--line-2)}
+.pair{flex:1;display:flex;flex-direction:column;justify-content:space-around;position:relative}
+.pair::after{content:"";position:absolute;right:-14px;top:25%;bottom:25%;width:14px;border:1px solid var(--line-2);border-left:0;border-radius:0 8px 8px 0}
+.pair::before{content:"";position:absolute;right:-28px;top:50%;width:14px;border-top:1px solid var(--line-2)}
+.m{background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative}
+.m div{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;font-size:.84rem;color:var(--dim)}
+.m div + div{border-top:1px solid var(--line)}
+.final .m{border-color:var(--gold-line)}
+.final .m::after{content:"";position:absolute;right:-29px;top:50%;width:28px;border-top:1px solid var(--gold-line)}
+.champ{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;border:1px solid var(--gold-line);border-radius:14px;padding:22px 14px;background:radial-gradient(80% 80% at 50% 0%,rgba(211,180,110,.16),transparent 70%),var(--bg)}
+.champ svg{width:46px;height:46px;color:var(--gold);filter:drop-shadow(0 0 12px rgba(211,180,110,.4))}
+.champ b{font:800 1.5rem var(--f-display);font-stretch:125%;color:var(--gold)}
+.champ span{font-size:.82rem;color:var(--dim)}
+
+/* Galeri */
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ph{aspect-ratio:4/3;max-width:100%;border-radius:16px;border:1px dashed var(--line-2);background:radial-gradient(80% 80% at 30% 20%,rgba(91,35,216,.22),transparent 70%),var(--panel);display:grid;place-items:center;padding:20px;position:relative;overflow:hidden}
+.ph svg{width:34px;height:34px;color:var(--gold);opacity:.55}
+.ph.wide{grid-column:span 2;aspect-ratio:auto;min-height:220px}
+
+/* Alt bilgi */
+footer{margin-top:120px;background:var(--void);border-top:1px solid var(--line);position:relative;overflow:hidden}
+footer .wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px 48px;padding-block:64px 36px;align-items:center}
+footer .crest svg{width:92px;height:auto;display:block}
+.forza{font-size:clamp(3rem,8vw,5.6rem);line-height:.95;margin:0}
+.forza em{color:var(--viola-hi)}
+footer dl{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px 32px;margin:12px 0 0;padding-top:28px;border-top:1px solid var(--line)}
+footer dt{font:600 .64rem var(--f-body);font-stretch:75%;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+footer dd{margin:4px 0 0;font-weight:600}
+.ig{color:var(--text);text-decoration:none;border-bottom:1px solid var(--gold-line);transition:color .2s,border-color .2s}
+.ig:hover{color:var(--gold);border-color:var(--gold)}
+.legal{grid-column:1/-1;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--dim);font-size:.8rem}
+
+/* Oyuncu penceresi */
+dialog.pd-dlg{border:1px solid var(--line-2);padding:0;border-radius:22px;background:var(--panel);color:var(--text);width:min(860px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;box-shadow:0 40px 100px rgba(0,0,0,.7)}
+dialog.pd-dlg::backdrop{background:rgba(5,2,14,.8);backdrop-filter:blur(6px)}
+body:has(dialog[open]){overflow:hidden}
+.pd{position:relative;padding:26px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:26px;align-items:center}
+.pd-x{position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line-2);background:var(--bg);color:var(--text);font-size:1.5rem;line-height:1;cursor:pointer;z-index:2;display:grid;place-items:center;transition:border-color .2s,color .2s}
+.pd-x:hover{border-color:var(--gold);color:var(--gold)}
+.pd-media{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pd-media figure{margin:0;border-radius:14px;overflow:hidden;aspect-ratio:4/5;max-width:100%;position:relative;display:grid;place-items:center;border:1px solid var(--line)}
+.pd-face{background:radial-gradient(80% 70% at 50% 25%,#3B1F88,#170C33)}
+.pd-media img{width:100%;height:100%;object-fit:cover;display:block}
+.pd-face svg{width:74%;height:auto;margin-bottom:14%}
+.pd-media figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px;font:600 .62rem var(--f-body);font-stretch:75%;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-align:center}
+.pd-kit{background:radial-gradient(80% 60% at 50% 12%,#432C92,#1A1138 58%,#08050F)}
+.pd-kit svg{width:84%;height:auto;margin-bottom:12%;filter:drop-shadow(0 22px 20px rgba(0,0,0,.6))}
+.pd-info h3{font-size:clamp(2rem,4.4vw,2.9rem);margin-top:12px}
+.pd-info h3.long{font-size:clamp(1.5rem,3.4vw,2.1rem);font-stretch:75%}
+.pd-info h3 span{display:block;font-family:var(--f-serif);font-style:italic;font-weight:400;text-transform:none;font-stretch:100%;font-size:.6em;letter-spacing:0;color:var(--muted);margin-bottom:6px}
+.pd-info .specs{margin-top:20px}
+.pd-nav{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--line)}
+.pd-nav .btn{padding:11px 18px}
+
+@media (max-width:980px){
+  .squad,.kit,.group{grid-template-columns:minmax(0,1fr)}
+  .lineup{position:static;max-width:420px}
+  .picker{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .pd{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .wrap{padding-inline:16px}
+  .hero .wrap{grid-template-columns:minmax(0,1fr);padding-block:44px 48px}
+  .hero-kit{width:min(300px,82%)}
+  .hero h1{font-size:min(21vw,9rem)}
+  nav.menu{margin-left:0;width:100%;order:3}
+  .draft{margin-left:auto}
+  html{scroll-padding-top:120px}
+  section.block{padding-top:80px}
+  .band{margin-top:80px;padding-bottom:80px}
+  .band section.block{padding-top:72px}
+  .gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kit-stage{padding:28px 12px 18px;gap:10px}
+  .fix-row{grid-template-columns:minmax(0,1fr) auto}
+  .fix-row .k{grid-column:1/-1}
+  footer .wrap{grid-template-columns:minmax(0,1fr)}
+  .pd{padding:18px}
+}
+@media (max-width:440px){
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .pc-num{font-size:3.4rem}
+  .pd-media{gap:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .ticker-track,.hero-kit .float{animation:none}
+  .pcard,.pc-kit,.btn{transition:none}
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#ana"><span data-crest></span><span><b data-team-name>142C</b><small>Trabzon Lisesi · 10-C</small></span></a>
+    <nav class="menu" aria-label="Bölümler">
+      <a href="#kadro">Kadro</a>
+      <a href="#forma">Forma</a>
+      <a href="#grup">Grup</a>
+      <a href="#agac">Turnuva ağacı</a>
+      <a href="#galeri">Galeri</a>
+      <a href="#hakkinda">Hakkında</a>
+    </nav>
+    <span class="draft">Taslak</span>
+  </div>
+</header>
+
+<section class="hero" id="ana">
+  <div class="mark" data-lily aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <div class="kicker label">Trabzon Lisesi · 10-C sınıf takımı</div>
+      <h1 class="display" data-team-name>142C</h1>
+      <p class="slogan serif">Bir sınıf, bir takım, tek renk: <em>mor.</em></p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#kadro">Kadroyu gör</a>
+        <a class="btn btn-ghost" href="#forma">Formayı incele</a>
+      </div>
+      <div class="status"><i></i>Kura henüz çekilmedi. Fikstür belli olunca eklenecek.</div>
+    </div>
+    <div class="hero-kit"><div class="float" id="heroKit"></div></div>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+<main>
+  <section class="block wrap" id="kadro">
+    <div class="sh">
+      <div>
+        <div class="kicker label">Trabzon Lisesi 10-C</div>
+        <h2 class="display">Kadro</h2>
+        <p>Bir oyuncuya dokun, bilgileri açılsın.</p>
+      </div>
+      <div class="seg" id="filters" role="group" aria-label="Kadroyu mevkiye göre filtrele"></div>
+    </div>
+    <div class="squad">
+      <div class="cards" id="cards"></div>
+      <aside class="lineup" aria-label="İlk 9 dizilişi">
+        <div class="label">Diziliş</div>
+        <h3 class="display" style="margin-top:8px">İlk 9 · 3-3-2</h3>
+        <p class="sub">Sahadaki dizilişimiz</p>
+        <div class="pitch" id="pitch">
+          <svg class="lines" viewBox="0 0 60 80" aria-hidden="true" fill="none" stroke="rgba(211,180,110,.38)" stroke-width=".4">
+            <rect x="2" y="2" width="56" height="76"/>
+            <line x1="2" y1="40" x2="58" y2="40"/>
+            <circle cx="30" cy="40" r="7"/>
+            <circle cx="30" cy="40" r=".7" fill="rgba(211,180,110,.38)"/>
+            <rect x="16" y="2" width="28" height="11"/>
+            <rect x="23" y="2" width="14" height="4.5"/>
+            <rect x="16" y="67" width="28" height="11"/>
+            <rect x="23" y="73.5" width="14" height="4.5"/>
+          </svg>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="band">
+    <section class="block wrap" id="forma">
+      <div class="sh">
+        <div>
+          <div class="kicker label">Fiorentina 1998–99</div>
+          <h2 class="display">Forma</h2>
+          <p>Takımın forması.</p>
+        </div>
+      </div>
+      <div class="kit">
+        <div class="kit-stage">
+          <figure id="kitFront"></figure>
+          <figure id="kitBack"></figure>
+        </div>
+        <div>
+          <div class="picker-h"><b>Oyuncu seç</b><span class="label" id="pickName"></span></div>
+          <div class="picker" id="picker" role="group" aria-label="Formadaki oyuncuyu seç"></div>
+          <dl class="specs">
+            <div><dt>Model</dt><dd>Fiorentina 1998–99 iç saha, FILA</dd></div>
+            <div><dt>Sponsor</dt><dd>Nintendo</dd></div>
+            <div><dt>Yaka</dt><dd>Mor, beyaz şeritli, iki düğmeli</dd></div>
+            <div><dt>Kollar</dt><dd>Beyaz omuzlar, dörder beyaz şerit</dd></div>
+            <div><dt>Şort</dt><dd>Mor, yanlarda beyaz şerit, arma ve numara</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="block wrap" id="grup">
+    <div class="sh">
+      <div>
+        <div class="kicker label">Grup aşaması</div>
+        <h2 class="display">Grubumuz</h2>
+      </div>
+    </div>
+    <div class="group">
+      <div class="panel">
+        <h3 class="display">4 takımlı grup</h3>
+        <ul class="slots" id="groupSlots"></ul>
+        <p class="note">Kura çekilince rakipler buraya yazılacak.</p>
+      </div>
+      <div class="panel">
+        <h3 class="display">Grup maçları</h3>
+        <div class="fix" id="fixture"></div>
+        <p class="note">Fikstür henüz belirlenmedi.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="agac">
+    <div class="sh">
+      <div>
+        <div class="kicker label">Gruplardan finale</div>
+        <h2 class="display">Turnuva ağacı</h2>
+      </div>
+    </div>
+    <div class="bracket-wrap">
+      <div class="bracket" id="bracket"></div>
+    </div>
+    <p class="note">Grup isimleri ve eşleşmeler kura çekilince belli olacak.</p>
+  </section>
+
+  <section class="block wrap" id="galeri">
+    <div class="sh">
+      <div>
+        <div class="kicker label">Fotoğraflar eklenecek</div>
+        <h2 class="display">Galeri</h2>
+      </div>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </section>
+</main>
+
+<footer id="hakkinda">
+  <div class="wrap">
+    <div class="crest" data-crest></div>
+    <p class="forza serif">Forza <em>142C</em></p>
+    <dl>
+      <div><dt>Takım</dt><dd data-team-name>142C</dd></div>
+      <div><dt>Okul</dt><dd>Trabzon Lisesi</dd></div>
+      <div><dt>Sınıf</dt><dd>10-C</dd></div>
+      <div><dt>Forma</dt><dd>Fiorentina 1998–99</dd></div>
+      <div><dt>Instagram</dt><dd><a class="ig" href="https://www.instagram.com/142_c_futbolkulubu/" target="_blank" rel="noopener">@142_c_futbolkulubu</a></dd></div>
+    </dl>
+    <div class="legal"><span>142C · 10-C · Trabzon Lisesi</span><span>2026–27 sezonu</span></div>
+  </div>
+</footer>
+
+<dialog class="pd-dlg" id="pd" aria-labelledby="pdName">
+  <div class="pd">
+    <button type="button" class="pd-x" data-close aria-label="Kapat">×</button>
+    <div class="pd-media">
+      <figure class="pd-face" id="pdFace"></figure>
+      <figure class="pd-kit" id="pdKit"></figure>
+    </div>
+    <div class="pd-info">
+      <div class="label" id="pdPos"></div>
+      <h3 class="display" id="pdName"></h3>
+      <dl class="specs" id="pdSpecs"></dl>
+    </div>
+    <div class="pd-nav">
+      <button type="button" class="btn btn-ghost" id="pdPrev">← Önceki</button>
+      <button type="button" class="btn btn-primary" data-close>Kadroya dön</button>
+      <button type="button" class="btn btn-ghost" id="pdNext">Sonraki →</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+document.documentElement.lang = 'tr'; // büyük harfte "i" -> "İ" doğru çevrilsin
+
+/* ===== Düzenlenecek veriler ===== */
+const TEAM = { name: '142C', sinif: '10-C', okul: 'Trabzon Lisesi', instagram: '142_c_futbolkulubu' };
+
+const LINES = { KL: 'Kaleci', DF: 'Defans', OS: 'Orta saha', HC: 'Hücum' };
+// ad: formadaki isim. İsteğe bağlı: foto: 'foto/saral.jpg' (yüz), formaFoto: 'foto/saral-forma.jpg'
+const players = [
+  { ad: 'Evrens',  adSoyad: 'Reşat Berk Evrens',        no: 10, hat: 'HC', mevki: 'Sol kanat' },
+  { ad: 'Batuhan', adSoyad: 'Batuhan Verep',            no: 1,  hat: 'KL', mevki: 'Kaleci' },
+  { ad: 'Ayaydın', adSoyad: 'Poyraz Ayaydın',           no: 69, hat: 'DF', mevki: 'Stoper' },
+  { ad: 'Başdağ',  adSoyad: 'Kemal Efe Başdağ',         no: 31, hat: 'DF', mevki: 'Stoper' },
+  { ad: 'Eren',    adSoyad: 'Eren Özmen',               no: 19, hat: 'DF', mevki: 'Stoper' },
+  { ad: 'Yılmaz',  adSoyad: 'Eymen Yılmaz',             no: 61, hat: 'DF', mevki: 'Sol bek' },
+  { ad: 'Patan',   adSoyad: 'Murat Yağız Patan',        no: 95, hat: 'DF', mevki: 'Sol bek' },
+  { ad: 'Arslan',  adSoyad: 'Mustafa Emir Arslan',      no: 29, hat: 'DF', mevki: 'Sağ bek' },
+  { ad: 'Fatih',   adSoyad: 'Fatih Köroğlu',            no: 18, hat: 'OS', mevki: 'Orta saha' },
+  { ad: 'Özten',   adSoyad: 'Efe Özten',                no: 7,  hat: 'OS', mevki: 'Orta saha' },
+  { ad: 'Kerem',   adSoyad: 'Kerem Emir Talip',         no: 17, hat: 'OS', mevki: 'Orta saha' },
+  { ad: 'Saral',   adSoyad: 'İsmail Hakkı Saral',       no: 8,  hat: 'HC', mevki: 'Sağ kanat' },
+  { ad: 'Muro',    adSoyad: 'Murahtan Mollamehmetoğlu', no: 9,  hat: 'HC', mevki: 'Forvet' },
+];
+// İlk 9: forma no -> sahadaki konum (% olarak, x soldan, y yukarıdan; hücum yukarı)
+const lineup = [
+  { no: 1,  x: 50, y: 89 },
+  { no: 61, x: 20, y: 68 }, { no: 69, x: 50, y: 73 }, { no: 31, x: 80, y: 68 },
+  { no: 18, x: 24, y: 46 }, { no: 7,  x: 50, y: 50 }, { no: 17, x: 76, y: 46 },
+  { no: 10, x: 22, y: 21 }, { no: 8,  x: 78, y: 21 },
+];
+const KIT = { body: '#4A10B0', white: '#F6F4FB', red: '#E0222B' };
+/* ================================= */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const upper = s => String(s).toLocaleUpperCase('tr-TR');
+// "Reşat Berk Evrens" -> ["Reşat Berk", "Evrens"]
+const splitName = full => { const w = String(full).trim().split(/\s+/); return [w.slice(0, -1).join(' '), w[w.length - 1]]; };
+
+const LILY_PATHS = `
+  <path d="M50 18 C59 30 61 44 54 58 H46 C39 44 41 30 50 18 Z"/>
+  <path d="M45 62 C32 65 20 57 20 45 C20 35 30 31 35 38 C29 41 30 50 38 53 C42 55 44 57 45 58 Z"/>
+  <path d="M55 62 C68 65 80 57 80 45 C80 35 70 31 65 38 C71 41 70 50 62 53 C58 55 56 57 55 58 Z"/>
+  <rect x="35" y="58" width="30" height="7" rx="2"/>
+  <path d="M45 65 L43 80 C39 81 36 85 38 89 L50 85 L62 89 C64 85 61 81 57 80 L55 65 Z"/>
+  <path d="M46.5 50 L37 27 M53.5 50 L63 27" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="36" cy="24.5" r="3.6"/><circle cx="64" cy="24.5" r="3.6"/>`;
+
+// Fiorentina (1991–2002) arması: altın çerçeveli uzun baklava, kırmızı zambak, altta "AC" ve kırmızı "F"
+function crestInner() {
+  return `<polygon points="50,3 95,52 50,147 5,52" fill="#FFFFFF"/>
+    <polygon points="17.3,78 82.7,78 50,147" fill="${KIT.body}"/>
+    <g transform="translate(50 46) scale(.6) translate(-50 -54)" fill="${KIT.red}" stroke="${KIT.red}" stroke-width="0">${LILY_PATHS}</g>
+    <text x="52" y="100" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="15" letter-spacing="4" fill="#FFFFFF">AC</text>
+    <text x="50" y="121" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="15" fill="${KIT.red}" stroke="#FFFFFF" stroke-width=".7" paint-order="stroke">F</text>
+    <polygon points="50,3 95,52 50,147 5,52" fill="none" stroke="#C9A75A" stroke-width="3.6" stroke-linejoin="round"/>`;
+}
+const crestSvg = () => `<svg viewBox="0 0 100 150" role="img" aria-label="Fiorentina arması">${crestInner()}</svg>`;
+const lilySvg = () => `<svg viewBox="16 14 68 78" aria-hidden="true" fill="var(--lily)" stroke="var(--lily)" stroke-width="0">${LILY_PATHS}</svg>`;
+
+// Kumaş gerçekliği için ortak tanımlar: ışık, kenar gölgesi, doku, bulanıklık
+let uid = 0;
+function fabricDefs(id) {
+  return `<radialGradient id="l${id}" cx="36%" cy="18%" r="85%">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".28"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity=".03"/><stop offset="1" stop-color="#000000" stop-opacity=".34"/></radialGradient>
+    <linearGradient id="e${id}" x1="0" x2="1">
+      <stop offset="0" stop-color="#000000" stop-opacity=".4"/><stop offset=".2" stop-color="#000000" stop-opacity="0"/>
+      <stop offset=".8" stop-color="#000000" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity=".48"/></linearGradient>
+    <pattern id="t${id}" width="2.4" height="2.4" patternUnits="userSpaceOnUse"><circle cx="1.2" cy="1.2" r=".48" fill="#000000" fill-opacity=".15"/></pattern>
+    <filter id="b${id}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.4"/></filter>`;
+}
+function shading(id, w, h, dark, light, extra = '') {
+  return `<rect width="${w}" height="${h}" fill="url(#t${id})"/>
+    <g filter="url(#b${id})" fill="none" stroke-linecap="round">
+      <g stroke="#000000" stroke-opacity=".3" stroke-width="7">${dark.map(d => `<path d="${d}"/>`).join('')}</g>
+      <g stroke="#FFFFFF" stroke-opacity=".17" stroke-width="6">${light.map(d => `<path d="${d}"/>`).join('')}</g>
+      ${extra}
+    </g>
+    <rect width="${w}" height="${h}" fill="url(#l${id})"/>
+    <rect width="${w}" height="${h}" fill="url(#e${id})"/>`;
+}
+const stitch = d => `<path d="${d}" fill="none" stroke="#FFFFFF" stroke-opacity=".3" stroke-width=".9" stroke-dasharray="2 2.2"/>`;
+const mirror = s => `${s}<g transform="translate(200 0) scale(-1 1)">${s}</g>`;
+
+// 90'lar tarzı numara: beyaz gövde, içte ince mor hat, dışta beyaz kenar
+function kitNumber(txt, x, y, size, perDigit) {
+  const base = `x="${x}" y="${y}" text-anchor="middle" font-family="'Graduate',Rockwell,Georgia,serif" font-size="${size}" textLength="${String(txt).length * perDigit}" lengthAdjust="spacingAndGlyphs"`;
+  return `<text ${base} fill="${KIT.white}" stroke="${KIT.white}" stroke-width="${(size * .075).toFixed(2)}" stroke-linejoin="round">${esc(txt)}</text>
+    <text ${base} fill="none" stroke="${KIT.body}" stroke-width="${(size * .03).toFixed(2)}" stroke-linejoin="round">${esc(txt)}</text>
+    <text ${base} fill="${KIT.white}">${esc(txt)}</text>`;
+}
+
+// Forma (şablondaki kesim): beyaz omuz panelleri, kollarda dörder yuvarlak uçlu beyaz şerit
+const SHIRT = front => `M68 6 L27 21 L2 99 L36 108 L38 86 L36 244 Q100 251 164 244 L162 86 L164 108 L198 99 L173 21 L132 6 Q100 ${front ? 30 : 13} 68 6 Z`;
+const SLEEVES = 'M27 21 L2 99 L36 108 L38 86 L31 42 Z M173 21 L198 99 L164 108 L162 86 L169 42 Z';
+const SLEEVE_BARS = [44, 57.5, 71, 84.5].map(y =>
+  `<rect x="-14" y="${y}" width="40" height="9.5" rx="4.75" transform="rotate(6 13 ${y + 4.75})"/>`).join('');
+const YOKE = 'M68 7 L27 21 L31 42 Q56 32 84 27 Q74 19 68 7 Z';
+
+function shirtLayer(id, { front, no, name }) {
+  const path = SHIRT(front);
+  const nm = upper(name);
+  const nameSize = Math.min(21, 230 / Math.max(nm.length, 1));
+  const frontPrint = `
+    <g fill="${KIT.white}">${mirror(`<path d="${YOKE}"/>`)}</g>
+    <path d="M31 42 L38 86 M169 42 L162 86" fill="none" stroke="#000000" stroke-opacity=".3" stroke-width=".8"/>
+    <text x="69" y="75" text-anchor="middle" font-family="'Barlow','Arial Black',sans-serif" font-weight="800" font-size="13.5" letter-spacing=".3" fill="${KIT.white}">FILA</text>
+    <g transform="translate(127 52) scale(.21)">${crestInner()}</g>
+    <rect x="52" y="100" width="96" height="23" rx="11.5" fill="${KIT.white}" stroke="${KIT.red}" stroke-width="3.4"/>
+    <text x="97" y="117.3" text-anchor="middle" font-family="'Barlow','Arial Black',sans-serif" font-weight="800" font-size="16.5" letter-spacing="-.2" fill="${KIT.red}">Nintendo</text>
+    <circle cx="140.5" cy="106" r="2.4" fill="none" stroke="${KIT.red}" stroke-width=".6"/>
+    <text x="140.5" y="107.3" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="3.3" fill="${KIT.red}">R</text>
+    <rect x="96" y="18" width="8" height="36" fill="${KIT.body}" stroke="#000000" stroke-opacity=".28" stroke-width=".7"/>
+    <circle cx="100" cy="29" r="2.6" fill="${KIT.white}" stroke="#000000" stroke-opacity=".25" stroke-width=".5"/>
+    <circle cx="100" cy="44" r="2.6" fill="${KIT.white}" stroke="#000000" stroke-opacity=".25" stroke-width=".5"/>`;
+  const backPrint = `
+    <text x="100" y="67" text-anchor="middle" font-family="'Saira Condensed','Barlow Condensed',sans-serif" font-weight="700" font-size="${nameSize.toFixed(1)}" letter-spacing="1.2" fill="${KIT.white}">${esc(nm)}</text>
+    ${no !== '' ? kitNumber(no, 100, 166, 104, 31) : ''}`;
+  const collar = front ? `
+    <path d="M68 6 Q100 -1 132 6 Q100 13 68 6 Z" fill="#1A0545"/>
+    <path d="M64 4 Q100 44 136 4 L127 4 Q100 31 73 4 Z" fill="${KIT.body}"/>
+    <path d="M64 4 Q100 44 136 4 L127 4 Q100 31 73 4 Z" fill="url(#l${id})"/>
+    <path d="M64 4 Q100 44 136 4" fill="none" stroke="${KIT.white}" stroke-width="2.6"/>` : `
+    <path d="M66 6 Q100 -3 134 6 L134 11 Q100 20 66 11 Z" fill="${KIT.body}"/>
+    <path d="M66 6 Q100 -3 134 6 L134 11 Q100 20 66 11 Z" fill="url(#l${id})"/>
+    <path d="M66 11 Q100 20 134 11" fill="none" stroke="#000000" stroke-opacity=".3" stroke-width=".8"/>`;
+  return `
+    <g clip-path="url(#c${id})">
+      <path d="${path}" fill="${KIT.body}"/>
+      <g clip-path="url(#v${id})" fill="${KIT.white}">${mirror(SLEEVE_BARS)}</g>
+      ${front ? frontPrint : backPrint}
+      ${shading(id, 200, 250,
+        ['M62 132 Q76 176 68 240', 'M140 124 Q126 176 134 240', 'M50 98 Q100 114 150 96', 'M16 52 Q24 74 20 98', 'M184 52 Q176 74 180 98'],
+        ['M86 72 Q98 134 90 206', 'M114 150 Q120 196 112 240', 'M56 52 Q66 64 62 84'],
+        `<ellipse cx="41" cy="98" rx="8" ry="22" fill="#000000" fill-opacity=".38" stroke="none"/><ellipse cx="159" cy="98" rx="8" ry="22" fill="#000000" fill-opacity=".38" stroke="none"/>`)}
+      ${stitch('M37 239 Q100 246 163 239')}${stitch('M4 94 L35 102 M196 94 L165 102')}
+    </g>
+    ${collar}
+    <path d="${path}" fill="none" stroke="#000000" stroke-opacity=".32" stroke-width="1.4"/>`;
+}
+
+// Şort: yanlarda beyaz şerit, altta yuvarlak uçlu şeritler; önde arma, numara ve FILA
+const SHORTS = 'M22 4 H178 Q186 66 192 128 Q152 136 112 128 L100 70 L88 128 Q48 136 8 128 Q14 66 22 4 Z';
+function shortsLayer(id, front, no) {
+  const edge = y => 22 - 14 * (y - 4) / 124;
+  const bars = [70, 82, 94, 106, 118].map(y =>
+    `<rect x="-5" y="${y}" width="${(edge(y + 4) + 23).toFixed(1)}" height="8" rx="4"/>`).join('');
+  const print = front ? `
+    <g transform="translate(34 90) scale(.19)">${crestInner()}</g>
+    ${no !== '' ? kitNumber(no, 152, 117, 30, 9) : ''}
+    <text x="152" y="128" text-anchor="middle" font-family="'Barlow','Arial Black',sans-serif" font-weight="800" font-size="8.5" fill="${KIT.white}">FILA</text>` : '';
+  return `
+    <g clip-path="url(#k${id})">
+      <path d="${SHORTS}" fill="${KIT.body}"/>
+      <g fill="${KIT.white}">${mirror(`<polygon points="-5,0 30,0 17,140 -5,140"/>${bars}`)}</g>
+      ${print}
+      ${shading(id, 200, 140,
+        ['M60 24 Q72 76 62 132', 'M140 24 Q128 76 138 132', 'M100 20 Q100 50 100 72'],
+        ['M78 20 Q86 56 80 100'],
+        `<rect x="15" y="4" width="170" height="9" fill="#000000" fill-opacity=".38" stroke="none"/>`)}
+      ${stitch('M23 12 H177')}
+    </g>
+    <path d="${SHORTS}" fill="none" stroke="#000000" stroke-opacity=".32" stroke-width="1.4"/>`;
+}
+
+// Tek forma (kadro kartı, oyuncu penceresi) ya da şortlu tam takım (forma vitrini)
+function jersey({ no = '', name = '', front = false, withShorts = false } = {}) {
+  const id = ++uid;
+  const label = front ? 'Forma, ön yüz' : `${name} forması, numara ${no}`;
+  return `<svg viewBox="0 0 200 ${withShorts ? 362 : 250}" role="img" aria-label="${esc(label)}">
+    <defs>
+      <clipPath id="c${id}"><path d="${SHIRT(front)}"/></clipPath>
+      <clipPath id="v${id}"><path d="${SLEEVES}"/></clipPath>
+      <clipPath id="k${id}"><path d="${SHORTS}"/></clipPath>
+      ${fabricDefs(id)}
+    </defs>
+    ${withShorts ? `<g transform="translate(15 234) scale(.85)">${shortsLayer(id, front, no)}</g>` : ''}
+    ${shirtLayer(id, { front, no, name })}
+  </svg>`;
+}
+
+// Arma, zambak, isim
+document.querySelectorAll('[data-crest]').forEach(el => el.innerHTML = crestSvg());
+document.querySelectorAll('[data-team-name]').forEach(el => el.textContent = TEAM.name);
+$('.hero .mark').innerHTML = `<svg viewBox="16 14 68 78" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0">${LILY_PATHS}</svg>`;
+$('#heroKit').innerHTML = jersey({ front: true, withShorts: true });
+
+// Kayan şerit
+const tick = [`Forza ${TEAM.name}`, `Instagram @${TEAM.instagram}`, TEAM.okul, TEAM.sinif, 'Fiorentina 1998–99'];
+const tickLily = `<svg viewBox="16 14 68 78" fill="#D3B46E" stroke="#D3B46E" stroke-width="0">${LILY_PATHS}</svg>`;
+const tickSet = tick.map(t => `<span>${esc(t)}${tickLily}</span>`).join('');
+$('#ticker').innerHTML = tickSet.repeat(4);
+
+// Kadro
+let filter = 'ALL';
+function renderFilters() {
+  const opts = [['ALL', 'Tümü'], ...Object.entries(LINES)];
+  $('#filters').innerHTML = opts.map(([k, l]) =>
+    `<button type="button" data-f="${k}" aria-pressed="${filter === k}">${l}</button>`).join('');
+}
+function renderCards() {
+  const list = players.filter(p => filter === 'ALL' || p.hat === filter);
+  $('#cards').innerHTML = list.map(p => {
+    const [first, last] = splitName(p.adSoyad || p.ad);
+    return `<button type="button" class="pcard" data-player="${p.no}" aria-label="${esc(p.adSoyad || p.ad)} bilgilerini aç">
+      <span class="pc-num" aria-hidden="true">${p.no}</span>
+      <span class="pc-kit">${jersey({ no: p.no, name: p.ad })}</span>
+      <span class="pc-meta"><span class="pc-pos">${esc(p.mevki)} · #${p.no}</span>
+        <span class="pc-name">${esc(first)}<b${last.length > 10 ? ` class="long" style="--n:${last.length}"` : ''}>${esc(last)}</b></span></span>
+    </button>`;
+  }).join('');
+}
+$('#filters').addEventListener('click', e => {
+  const b = e.target.closest('[data-f]'); if (!b) return;
+  filter = b.dataset.f; renderFilters(); renderCards();
+});
+renderFilters(); renderCards();
+
+const byNo = Object.fromEntries(players.map(p => [p.no, p]));
+$('#pitch').insertAdjacentHTML('beforeend', lineup.map(l => {
+  const p = byNo[l.no];
+  return `<button type="button" class="dot ${p.hat === 'KL' ? 'gk' : ''}" data-player="${p.no}" aria-label="${esc(p.adSoyad || p.ad)} bilgilerini aç" style="left:${l.x}%;top:${l.y}%"><b>${p.no}</b><span>${esc(p.ad)}</span></button>`;
+}).join(''));
+
+// Oyuncu penceresi: kart ya da sahadaki oyuncuya tıklayınca açılır
+const dlg = $('#pd');
+let cur = 0;
+const faceSvg = `<svg viewBox="0 0 100 110" aria-hidden="true">
+  <circle cx="50" cy="40" r="21" fill="#FFFFFF" opacity=".18"/>
+  <path d="M12 110 C12 82 30 68 50 68 C70 68 88 82 88 110 Z" fill="${KIT.body}"/>
+  <path d="M40 69 L50 82 L60 69" fill="none" stroke="${KIT.white}" stroke-width="2.4" stroke-linejoin="round"/></svg>`;
+function renderPlayer() {
+  const p = players[cur];
+  const [first, last] = splitName(p.adSoyad || p.ad);
+  $('#pdFace').innerHTML = p.foto
+    ? `<img src="${esc(p.foto)}" alt="${esc(p.adSoyad || p.ad)} fotoğrafı">`
+    : `${faceSvg}<figcaption>Fotoğraf eklenecek</figcaption>`;
+  $('#pdKit').innerHTML = p.formaFoto
+    ? `<img src="${esc(p.formaFoto)}" alt="${esc(p.ad)} forması">`
+    : `${jersey({ no: p.no, name: p.ad })}<figcaption>Forma · #${p.no}</figcaption>`;
+  $('#pdPos').textContent = `${p.mevki} · #${p.no}`;
+  $('#pdName').classList.toggle('long', last.length > 10);
+  $('#pdName').innerHTML = `${first ? `<span>${esc(first)}</span>` : ''}${esc(last)}`;
+  $('#pdSpecs').innerHTML = [
+    ['Ad soyad', p.adSoyad || 'Eklenecek'], ['Formadaki isim', upper(p.ad)],
+    ['Numara', p.no], ['Mevki', p.mevki],
+  ].map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('');
+}
+function openPlayer(no) {
+  cur = Math.max(0, players.findIndex(p => String(p.no) === String(no)));
+  renderPlayer();
+  if (!dlg.open) dlg.showModal();
+}
+const step = d => { cur = (cur + d + players.length) % players.length; renderPlayer(); };
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-player]');
+  if (t) openPlayer(t.dataset.player);
+});
+dlg.addEventListener('click', e => {
+  if (e.target === dlg || e.target.closest('[data-close]')) dlg.close();
+});
+$('#pdPrev').addEventListener('click', () => step(-1));
+$('#pdNext').addEventListener('click', () => step(1));
+dlg.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'ArrowRight') step(1);
+});
+
+// Forma: oyuncu seçici (varsayılan Evrens)
+let kitNo = 10;
+function renderKit() {
+  const p = byNo[kitNo] || players[0];
+  $('#picker').innerHTML = players.map(q =>
+    `<button type="button" class="pk" data-kit="${q.no}" aria-pressed="${q.no === p.no}"><i>${q.no}</i>${esc(q.ad)}</button>`).join('');
+  $('#pickName').textContent = p.adSoyad || p.ad;
+  $('#kitFront').innerHTML = `${jersey({ front: true, no: p.no, withShorts: true })}<figcaption>Ön</figcaption>`;
+  $('#kitBack').innerHTML = `${jersey({ no: p.no, name: p.ad, withShorts: true })}<figcaption>Arka · ${esc(p.ad)}</figcaption>`;
+}
+$('#picker').addEventListener('click', e => {
+  const b = e.target.closest('[data-kit]'); if (!b) return;
+  kitNo = Number(b.dataset.kit); renderKit();
+});
+renderKit();
+
+// Grup: kura ve fikstür yer tutucuları
+$('#groupSlots').innerHTML =
+  `<li class="us">${crestSvg()}<span>${esc(TEAM.name)} · ${esc(TEAM.sinif)}</span></li>` +
+  [1, 2, 3].map(() => `<li><i>?</i><span>Kura bekleniyor</span></li>`).join('');
+$('#fixture').innerHTML = [1, 2, 3].map(n => `
+  <div class="fix-row"><span class="k">Maç ${n}</span>
+  <span class="t">${esc(TEAM.name)} <em>– rakip belli değil</em></span>
+  <span class="d">Tarih yok</span></div>`).join('');
+
+// Turnuva ağacı: gruplar → çeyrek final → yarı final → final → şampiyon
+const box = () => `<div class="m"><div><span>Belli değil</span><span>–</span></div><div><span>Belli değil</span><span>–</span></div></div>`;
+const trophy = `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M15 6h18v12a9 9 0 0 1-18 0Z"/><path d="M15 10H8v4a7 7 0 0 0 7 7M33 10h7v4a7 7 0 0 1-7 7"/><path d="M24 27v8M17 42h14l-2-7H19Z"/></svg>`;
+const grp = n => `<div class="grp"><h5>Grup ${n}</h5>${[0, 1, 2, 3].map(i =>
+  n === 1 && i === 0 ? `<div class="us">${esc(TEAM.name)}</div>` : `<div>Belli değil</div>`).join('')}</div>`;
+$('#bracket').innerHTML = `
+  <div class="rnd"><h4>Gruplar</h4><div class="rnd-body">${[1, 2, 3, 4].map(grp).join('')}</div></div>
+  <div class="rnd"><h4>Çeyrek final</h4><div class="rnd-body">
+    <div class="pair">${box()}${box()}</div><div class="pair">${box()}${box()}</div></div></div>
+  <div class="rnd"><h4>Yarı final</h4><div class="rnd-body">
+    <div class="pair">${box()}${box()}</div></div></div>
+  <div class="rnd final"><h4>Final</h4><div class="rnd-body">${box()}</div></div>
+  <div class="rnd"><h4>Şampiyon</h4><div class="rnd-body">
+    <div class="champ">${trophy}<b>?</b><span>Kupa sahibini bekliyor</span></div></div></div>`;
+
+// Galeri: fotoğraflar gelene kadar boş kareler (ilki geniş)
+const camIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.6"/><path d="M8.5 6 10 3.8h4L15.5 6"/></svg>`;
+$("#gallery").innerHTML = [true, false, false, false, false].map(wide =>
+  `<div class="ph${wide ? " wide" : ""}" role="img" aria-label="Fotoğraf eklenecek">${camIcon}</div>`).join("");
+</script>
+
+</body>
+</html>
