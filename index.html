@@ -668,7 +668,7 @@ const LINES = { KL: 'Kaleci', DF: 'Defans', OS: 'Orta saha', HC: 'Hücum' };
 // ad: formadaki isim. İsteğe bağlı: foto: 'foto/saral.jpg' (yüz), formaFoto: 'foto/saral-forma.jpg'
 const players = [
   { ad: 'Evrens',  adSoyad: 'Reşat Berk Evrens',        no: 10, hat: 'HC', mevki: 'Sol kanat' },
-  { ad: 'Batuhan', adSoyad: 'Batuhan Verep',            no: 1,  hat: 'KL', mevki: 'Kaleci' },
+  { ad: 'Saral',   adSoyad: 'İsmail Hakkı Saral',       no: 8,  hat: 'HC', mevki: 'Sağ kanat' },
   { ad: 'Ayaydın', adSoyad: 'Poyraz Ayaydın',           no: 69, hat: 'DF', mevki: 'Stoper' },
   { ad: 'Başdağ',  adSoyad: 'Kemal Efe Başdağ',         no: 31, hat: 'DF', mevki: 'Stoper' },
   { ad: 'Eren',    adSoyad: 'Eren Özmen',               no: 19, hat: 'DF', mevki: 'Stoper' },
@@ -678,8 +678,8 @@ const players = [
   { ad: 'Fatih',   adSoyad: 'Fatih Köroğlu',            no: 18, hat: 'OS', mevki: 'Orta saha' },
   { ad: 'Özten',   adSoyad: 'Efe Özten',                no: 7,  hat: 'OS', mevki: 'Orta saha' },
   { ad: 'Kerem',   adSoyad: 'Kerem Emir Talip',         no: 17, hat: 'OS', mevki: 'Orta saha' },
-  { ad: 'Saral',   adSoyad: 'İsmail Hakkı Saral',       no: 8,  hat: 'HC', mevki: 'Sağ kanat' },
   { ad: 'Muro',    adSoyad: 'Murahtan Mollamehmetoğlu', no: 9,  hat: 'HC', mevki: 'Forvet' },
+  { ad: 'Batuhan', adSoyad: 'Batuhan Verep',            no: 1,  hat: 'KL', mevki: 'Kaleci' },
 ];
 // İlk 9: forma no -> sahadaki konum (% olarak, x soldan, y yukarıdan; hücum yukarı)
 const lineup = [
@@ -1296,7 +1296,8 @@ function renderStats() {
   document.querySelectorAll('.king-empty').forEach(e => { e.hidden = anyStat; }); // not: sadece hiç istatistik yokken
   const visible = Math.max(5, scored('gol'), scored('asist'));
   const list = (key, el) => {
-    const rows = players.slice().sort((a, b) => val(b, key) - val(a, key) || a.ad.localeCompare(b.ad, 'tr'));
+    // eşitlikte kadrodaki sıra korunur (Evrens, Saral önde; Batuhan sonda)
+    const rows = players.slice().sort((a, b) => val(b, key) - val(a, key) || players.indexOf(a) - players.indexOf(b));
     const best = val(rows[0], key);
     const ol = $(el);
     ol.style.setProperty('--rows', visible);
