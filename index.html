@@ -911,7 +911,22 @@ bRender();
 
 // Taraftar kadroları duvarı
 let wall = [], wShown = 24, wState = 'loading';
-const validEntry = k => k && FORMATIONS[k.dizilis] && Array.isArray(k.oyuncular) && k.oyuncular.length === 9 && k.oyuncular.every(n => n in byNo);
+// Google E-Tablo "3-3-2" gibi dizilişleri tarihe çevirebiliyor ("Sun Mar 03 2002 …" = 3-3-2): geri çevir
+const MONTHS = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
+function normForm(s) {
+  s = String(s || '').trim();
+  if (FORMATIONS[s]) return s;
+  const m = s.match(/^[A-Za-z]{3} ([A-Za-z]{3}) (\d{1,2}) (\d{4})/);
+  if (!m) return null;
+  const [d, mo, y] = [+m[2], MONTHS[m[1]], +m[3]];
+  const k = `${d}-${mo}-${y % 10}`;
+  return FORMATIONS[k] ? k : null;
+}
+const validEntry = k => {
+  if (!k) return false;
+  k.dizilis = normForm(k.dizilis);
+  return !!k.dizilis && Array.isArray(k.oyuncular) && k.oyuncular.length === 9 && k.oyuncular.every(n => n in byNo);
+};
 const fmtTime = t => {
   const d = new Date(t);
   return isNaN(d) ? '' : d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' · ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
