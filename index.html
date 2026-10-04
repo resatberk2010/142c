@@ -227,8 +227,27 @@ section.block{padding-block:104px 0}
 .md b{width:24px;height:24px;border-radius:50%;background:#FFFFFF;color:#3A12A8;display:grid;place-items:center;font:italic 800 .66rem var(--f-display);font-stretch:110%;box-shadow:0 3px 8px rgba(0,0,0,.45)}
 .md span{font:700 .5rem var(--f-body);font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.8);white-space:nowrap}
 .wc-note{margin:0;font:italic 400 1.05rem/1.3 var(--f-serif);color:var(--muted);overflow-wrap:anywhere}
-.kd-dlg{width:min(560px,calc(100vw - 24px))}
-.kd{position:relative;padding:26px;display:grid;gap:18px}
+.kd-dlg{width:min(1000px,calc(100vw - 24px))}
+.kd{position:relative;padding:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:18px 28px;align-items:start}
+.kd-main{display:grid;gap:18px;min-width:0}
+.kd .pd-nav{grid-column:1/-1}
+.kd-side{display:grid;gap:12px;min-width:0;padding-top:52px}
+.kdc-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.kdc-h b{font-size:1.2rem}
+.kdc-h span{white-space:nowrap}
+.kdc-list{list-style:none;margin:0;padding:0 4px 0 0;display:grid;gap:8px;max-height:min(46vh,420px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.kdc-list li{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;gap:4px}
+.kdc-list li.new{animation:cmIn .6s ease-out}
+.kdc-list .cm-h b{font-size:.9rem}
+.kdc-list p{margin:0;font-size:.92rem;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+.kdc-empty{color:var(--dim);font-size:.9rem;padding:6px 2px}
+.kdc-form{display:grid;gap:8px}
+.kdc-form input,.kdc-form textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);font:400 .95rem/1.4 var(--f-body);resize:vertical}
+.kdc-form input:focus,.kdc-form textarea:focus{outline:none;border-color:var(--gold)}
+.kdc-form .btn{padding:10px 18px}
+.cmt{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font:700 .8rem var(--f-body);font-variant-numeric:tabular-nums}
+.cmt svg{width:16px;height:16px}
+@media (max-width:860px){.kd{grid-template-columns:minmax(0,1fr)}.kd-side{padding-top:0}}
 .kd h3{font-size:clamp(1.8rem,5vw,2.4rem);margin-top:8px}
 .mini.big{display:block;max-width:440px;margin-inline:auto;border-radius:14px}
 .mini.big .md{gap:4px}
@@ -475,7 +494,7 @@ body:has(dialog[open]){overflow:hidden}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .ticker-track,.hero-kit .float,.picking .slot:not(.filled) b,.wc.new,.b-hint.nudge,.cm.new{animation:none}
+  .ticker-track,.hero-kit .float,.picking .slot:not(.filled) b,.wc.new,.b-hint.nudge,.cm.new,.kdc-list li.new{animation:none}
   .pcard,.pc-kit,.btn,.wc,.heart,.nw{transition:none}
 }
 /* Trabzon Fen Lisesi logosu (192px, yuvarlak, şeffaf; kaynak: takim/okul-logo.png) */
@@ -775,13 +794,24 @@ body:has(dialog[open]){overflow:hidden}
 <dialog class="pd-dlg kd-dlg" id="kd" aria-labelledby="kdTitle">
   <div class="kd">
     <button type="button" class="pd-x" data-close aria-label="Kapat">×</button>
-    <div>
-      <div class="label" id="kdTime"></div>
-      <h3 class="display" id="kdTitle"></h3>
+    <div class="kd-main">
+      <div>
+        <div class="label" id="kdTime"></div>
+        <h3 class="display" id="kdTitle"></h3>
+      </div>
+      <div class="mini big" id="kdPitch"></div>
+      <p class="wc-note" id="kdNote"></p>
+      <div class="kd-actions"><button type="button" class="heart big" id="kdLike" aria-pressed="false"></button><button type="button" class="btn btn-ghost" id="kdShot">Resim olarak indir</button></div>
     </div>
-    <div class="mini big" id="kdPitch"></div>
-    <p class="wc-note" id="kdNote"></p>
-    <div class="kd-actions"><button type="button" class="heart big" id="kdLike" aria-pressed="false"></button><button type="button" class="btn btn-ghost" id="kdShot">Resim olarak indir</button></div>
+    <aside class="kd-side" aria-label="Bu kadronun yorumları">
+      <div class="kdc-h"><b class="display">Yorumlar</b><span class="label" id="kdcCount"></span></div>
+      <ol class="kdc-list" id="kdcList"></ol>
+      <form class="kdc-form" id="kdcForm" novalidate>
+        <input id="kdcName" maxlength="30" placeholder="Adın" autocomplete="off" aria-label="Adın">
+        <textarea id="kdcText" maxlength="300" rows="2" placeholder="Bu kadroya yorum yaz" aria-label="Yorumun"></textarea>
+        <div class="c-foot"><span class="b-msg" id="kdcMsg" aria-live="polite"></span><button type="submit" class="btn btn-primary" id="kdcSend">Gönder</button></div>
+      </form>
+    </aside>
     <div class="pd-nav">
       <button type="button" class="btn btn-ghost" id="kdPrev">← Önceki</button>
       <button type="button" class="btn btn-primary" data-close>Kapat</button>
@@ -1247,6 +1277,8 @@ bRender();
 // Sizin kadrolarınız duvarı
 let wall = [], wView = [], wShown = 24, wState = 'loading', wSort = 'new';
 let likes = {};                                   // kadro id -> beğeni sayısı
+let kcOn = false, kdComments = {};               // kadro yorumları: kadro id -> [yorum]
+const CMT_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>`;
 let likesOn = false;                              // sunucu beğenileri destekliyor mu (Apps Script güncel mi)
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -1305,7 +1337,7 @@ function wallCard(k, i, fav) {
     <span class="wc-h"><b>${esc(k.dizilis)}</b><span>${fmtTime(k.t)}</span></span>
     <span class="mini">${PITCH_LINES}${miniDots(k, p => p.ad)}</span>
     ${note ? `<span class="wc-note">${esc(note)}</span>` : ''}
-    <span class="wc-f">${heartBtn(k)}${isFav ? '<span class="fav-badge">En çok beğenilen</span>' : ''}</span>
+    <span class="wc-f">${heartBtn(k)}${kcOn ? `<span class="cmt" data-cmt="${esc(kid(k))}" title="Yorum">${CMT_ICON}<span>${(kdComments[kid(k)] || []).length}</span></span>` : ''}${isFav ? '<span class="fav-badge">En çok beğenilen</span>' : ''}</span>
   </div>`;
 }
 function renderWall() {
@@ -1356,6 +1388,9 @@ function applyData(d) {
   news = newsOn ? d.haberler.filter(h => h && h.baslik && !(h.tarih && Date.now() - h.tarih > 30 * 864e5)) : [];
   commentsOn = Array.isArray(d.yorumlar);
   comments = commentsOn ? d.yorumlar.filter(c => c && c.metin) : [];
+  kcOn = Array.isArray(d.kadroYorumlari);
+  kdComments = {};
+  if (kcOn) d.kadroYorumlari.forEach(c => { if (c && c.kadro && c.metin) (kdComments[c.kadro] = kdComments[c.kadro] || []).push(c); });
   dataReady = true;
   wState = 'ready';
 }
@@ -1447,6 +1482,7 @@ function renderKd() {
   const id = kid(k);
   $('#kdLike').dataset.like = id;
   $('#kdLike').innerHTML = `${HEART}<span>${likes[id] || 0}</span>`;
+  renderKdc();
   $('#kdLike').setAttribute('aria-pressed', liked.has(id));
   $('#kdLike').hidden = !likesOn;
   $('#kdPrev').disabled = $('#kdNext').disabled = wView.length < 2;
@@ -1459,7 +1495,61 @@ $('#kdShot').addEventListener('click', () => shareLineup(wView[kdIdx], $('#kdSho
 $('#bShot').addEventListener('click', () => lastSent && shareLineup(lastSent, $('#bShot')));
 $('#kdPrev').addEventListener('click', () => kdStep(-1));
 $('#kdNext').addEventListener('click', () => kdStep(1));
-kd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') kdStep(-1); if (e.key === 'ArrowRight') kdStep(1); });
+kd.addEventListener('keydown', e => {
+  if (e.target.closest('input, textarea')) return; // yorum yazarken ok tuşları kadro değiştirmesin
+  if (e.key === 'ArrowLeft') kdStep(-1);
+  if (e.key === 'ArrowRight') kdStep(1);
+});
+
+// Kadro yorumları: büyük pencerenin sağında, o kadroya ait yorumlar ve yorum yazma kutusu
+const KDC_WAIT = 15e3; // aynı tarayıcıdan iki kadro yorumu arası en az 15 sn
+let kdcSending = false;
+const kdcMsg = (text, kind = '') => { $('#kdcMsg').textContent = text; $('#kdcMsg').className = 'b-msg' + (kind ? ' ' + kind : ''); };
+function renderKdc() {
+  const k = wView[kdIdx];
+  const list = k ? (kdComments[kid(k)] || []) : [];
+  $('#kdcCount').textContent = kcOn && list.length ? `${list.length} yorum` : '';
+  $('#kdcForm').hidden = !(KADRO_API && kcOn);
+  $('#kdcList').innerHTML = !(KADRO_API && kcOn)
+    ? `<li class="kdc-empty">Kadro yorumları yakında açılacak.</li>`
+    : list.length
+      ? list.map(c => `<li${c._new ? ' class="new"' : ''}><div class="cm-h"><b>${esc(c.isim || 'İsimsiz')}</b><span>${fmtTime(c.t)}</span></div><p>${esc(c.metin)}</p></li>`).join('')
+      : `<li class="kdc-empty">Bu kadroya henüz yorum yapılmadı. İlk yorumu sen yaz.</li>`;
+  if (!$('#kdcName').value) $('#kdcName').value = store.get('142c-ad', '');
+  $('#kdcSend').disabled = kdcSending;
+}
+const paintCmt = id => document.querySelectorAll(`[data-cmt="${CSS.escape(id)}"] span`).forEach(s => { s.textContent = (kdComments[id] || []).length; });
+['kdcName', 'kdcText'].forEach(i => $('#' + i).addEventListener('input', () => kdcMsg('')));
+$('#kdcForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const k = wView[kdIdx];
+  if (!k || !KADRO_API || !kcOn || kdcSending) return;
+  const isim = $('#kdcName').value.trim().slice(0, 30);
+  const metin = $('#kdcText').value.trim();
+  if (!isim) { kdcMsg('Adını yazmadan gönderemezsin.', 'err'); $('#kdcName').focus(); return; }
+  if (metin.length < 2) { kdcMsg('Yorum yazmadan gönderemezsin.', 'err'); $('#kdcText').focus(); return; }
+  const wait = KDC_WAIT - (Date.now() - store.get('142c-son-kadro-yorum', 0));
+  if (wait > 0) { kdcMsg(`${Math.ceil(wait / 1000)} saniye bekle.`, 'err'); return; }
+  const id = kid(k);
+  kdcSending = true; $('#kdcSend').textContent = 'Gönderiliyor…'; renderKdc();
+  try {
+    const r = await fetch(KADRO_API, { method: 'POST', body: JSON.stringify({ islem: 'kadroYorum', kadro: id, isim, metin }) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.hata || 'hata');
+    store.set('142c-son-kadro-yorum', Date.now());
+    store.set('142c-ad', isim);
+    (kdComments[id] = kdComments[id] || []).unshift({ kadro: id, t: Number(d.t) || Date.now(), isim, metin, _new: true });
+    $('#kdcText').value = '';
+    kdcMsg('Yorumun eklendi.', 'ok');
+    paintCmt(id);
+  } catch {
+    kdcMsg('Gönderilemedi, tekrar dene.', 'err');
+  } finally {
+    kdcSending = false; $('#kdcSend').textContent = 'Gönder';
+    renderKdc();
+    (kdComments[id] || []).forEach(c => { delete c._new; });
+  }
+});
 
 // Krallık: gol ve asist sıralaması
 function renderStats() {
