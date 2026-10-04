@@ -278,6 +278,23 @@ section.block{padding-block:104px 0}
 .kd-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 .sh-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
+/* Yorumlar */
+.comments{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:24px;align-items:start}
+.c-form{display:grid;gap:14px;position:sticky;top:90px}
+.field textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);font:400 1rem/1.5 var(--f-body);resize:vertical;min-height:110px}
+.field textarea:focus{outline:none;border-color:var(--gold)}
+.c-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.c-len{font-size:.8rem;color:var(--dim);font-variant-numeric:tabular-nums}
+.c-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.cm{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px}
+.cm.new{animation:cmIn .6s ease-out}
+@keyframes cmIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.cm-av{grid-row:span 2;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#6E3AF2,#4A17C4);color:#FFFFFF;font:italic 800 1rem var(--f-display)}
+.cm-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;min-width:0}
+.cm-h b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.cm-h span{flex:none;font-size:.76rem;color:var(--dim)}
+.cm p{margin:0;color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+
 /* Grup */
 .group{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:20px;align-items:start}
 .slots{display:grid;gap:8px;list-style:none;margin:0;padding:0}
@@ -361,7 +378,8 @@ body:has(dialog[open]){overflow:hidden}
 .pd-nav .btn{padding:11px 18px}
 
 @media (max-width:980px){
-  .squad,.kit,.group,.builder,.wall-wrap,.kings{grid-template-columns:minmax(0,1fr)}
+  .squad,.kit,.group,.builder,.wall-wrap,.kings,.comments{grid-template-columns:minmax(0,1fr)}
+  .c-form{position:static}
   .fav{position:static;order:2}
   .lineup{position:static;max-width:420px}
   .picker{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
@@ -396,7 +414,7 @@ body:has(dialog[open]){overflow:hidden}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .ticker-track,.hero-kit .float,.picking .slot:not(.filled) b,.wc.new,.b-hint.nudge{animation:none}
+  .ticker-track,.hero-kit .float,.picking .slot:not(.filled) b,.wc.new,.b-hint.nudge,.cm.new{animation:none}
   .pcard,.pc-kit,.btn,.wc,.heart{transition:none}
 }
 /* Trabzon Fen Lisesi logosu (192px, yuvarlak, şeffaf; kaynak: takim/okul-logo.png) */
@@ -415,6 +433,7 @@ body:has(dialog[open]){overflow:hidden}
       <a href="#grup">Grup</a>
       <a href="#agac">Turnuva ağacı</a>
       <a href="#galeri">Galeri</a>
+      <a href="#yorumlar">Yorumlar</a>
       <a href="#hakkinda">Hakkında</a>
     </nav>
     <span class="draft">Taslak</span>
@@ -608,6 +627,27 @@ body:has(dialog[open]){overflow:hidden}
       </div>
     </div>
     <div class="gallery" id="gallery"></div>
+  </section>
+  <section class="block wrap" id="yorumlar">
+    <div class="sh">
+      <div>
+        <div class="kicker label" id="cCount">Taraftar köşesi</div>
+        <h2 class="display">Yorumlar</h2>
+        <p>Takıma bir mesaj bırak. Yorumlar herkese açık görünür.</p>
+      </div>
+    </div>
+    <div class="comments">
+      <form class="panel c-form" id="cForm" novalidate>
+        <div class="field"><label for="cName">Adın</label><input id="cName" maxlength="30" placeholder="İsteğe bağlı" autocomplete="off"></div>
+        <div class="field"><label for="cText">Yorumun</label><textarea id="cText" maxlength="300" rows="4" placeholder="Forza 142C!"></textarea></div>
+        <div class="c-foot"><span class="c-len" id="cLen">0 / 300</span><button type="submit" class="btn btn-primary" id="cSend">Gönder</button></div>
+        <p class="b-msg" id="cMsg" aria-live="polite"></p>
+      </form>
+      <div>
+        <ol class="c-list" id="cList"></ol>
+        <div class="wall-more"><button type="button" class="btn btn-ghost" id="cMore" hidden>Daha fazla göster</button></div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -1215,11 +1255,14 @@ async function loadWall() {
       stats = Object.fromEntries(d.istatistik.filter(s => s.no in byNo).map(s => [s.no, { gol: +s.gol || 0, asist: +s.asist || 0 }]));
       renderStats(); renderCards();
     }
+    commentsOn = Array.isArray(d.yorumlar);
+    comments = commentsOn ? d.yorumlar.filter(c => c && c.metin) : [];
     wState = 'ready';
   } catch {
     wState = 'error';
   }
   renderWall();
+  renderComments();
 }
 
 // Kalp: anında işaretlenir, sunucu sayıyı onaylar; hata olursa geri alınır
@@ -1458,6 +1501,58 @@ function startCountdown() {
   const timer = setInterval(tick, 1000);
   tick();
 }
+// Yorumlar (en altta): aynı Google tablosundaki "Yorumlar" sayfasından gelir
+let comments = [], commentsOn = false, cShown = 20, cSending = false;
+const C_WAIT = 30e3; // aynı tarayıcıdan iki yorum arası en az 30 sn
+function renderComments() {
+  const n = comments.length;
+  $('#cCount').textContent = n ? `${n} yorum` : 'Taraftar köşesi';
+  const ready = KADRO_API && commentsOn;
+  $('#cForm').querySelectorAll('input,textarea,button').forEach(el => { el.disabled = !ready || (el.id === 'cSend' && cSending); });
+  let html;
+  if (n) {
+    html = comments.slice(0, cShown).map(c => {
+      const name = String(c.isim || '').trim() || 'İsimsiz taraftar';
+      return `<li class="cm${c._new ? ' new' : ''}"><span class="cm-av" aria-hidden="true">${esc(upper(name.charAt(0)))}</span>
+        <div class="cm-h"><b>${esc(name)}</b><span>${fmtTime(c.t)}</span></div><p>${esc(c.metin)}</p></li>`;
+    }).join('');
+  } else if (!KADRO_API || (wState === 'ready' && !commentsOn)) html = `<li class="wall-state">Yorumlar yakında açılacak.</li>`;
+  else if (wState === 'loading') html = `<li class="wall-state">Yorumlar yükleniyor…</li>`;
+  else if (wState === 'error') html = `<li class="wall-state">Yorumlar şu an yüklenemedi.</li>`;
+  else html = `<li class="wall-state">Henüz yorum yok. İlk yorumu sen yaz.</li>`;
+  $('#cList').innerHTML = html;
+  $('#cMore').hidden = n <= cShown;
+}
+const cMsg = (text, kind = '') => { $('#cMsg').textContent = text; $('#cMsg').className = 'b-msg' + (kind ? ' ' + kind : ''); };
+$('#cText').addEventListener('input', () => { $('#cLen').textContent = `${$('#cText').value.length} / 300`; cMsg(''); });
+$('#cMore').addEventListener('click', () => { cShown += 20; renderComments(); });
+$('#cForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!KADRO_API || !commentsOn || cSending) return;
+  const metin = $('#cText').value.trim();
+  if (metin.length < 2) { cMsg('Yorum yazmadan gönderemezsin.', 'err'); $('#cText').focus(); return; }
+  const wait = C_WAIT - (Date.now() - store.get('142c-son-yorum', 0));
+  if (wait > 0) { cMsg(`Yeni yorum için ${Math.ceil(wait / 1000)} saniye bekle.`, 'err'); return; }
+  const isim = $('#cName').value.trim().slice(0, 30);
+  cSending = true; $('#cSend').textContent = 'Gönderiliyor…'; renderComments();
+  try {
+    const r = await fetch(KADRO_API, { method: 'POST', body: JSON.stringify({ islem: 'yorum', isim, metin }) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.hata || 'hata');
+    store.set('142c-son-yorum', Date.now());
+    comments.unshift({ id: String(d.id), t: Number(d.t) || Date.now(), isim, metin, _new: true });
+    $('#cText').value = ''; $('#cLen').textContent = '0 / 300';
+    cMsg('Yorumun eklendi.', 'ok');
+  } catch {
+    cMsg('Yorumun gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.', 'err');
+  } finally {
+    cSending = false; $('#cSend').textContent = 'Gönder';
+    renderComments();
+    comments.forEach(c => { delete c._new; });
+  }
+});
+renderComments();
+
 startCountdown();
 loadWall();
 
