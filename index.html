@@ -285,7 +285,11 @@ section.block{padding-block:104px 0}
 .nw{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel);cursor:pointer;text-align:left;color:var(--text);font:inherit;padding:0;transition:transform .25s,border-color .25s,box-shadow .25s}
 .nw:hover{transform:translateY(-3px);border-color:var(--gold-line);box-shadow:0 18px 36px -16px rgba(110,58,242,.7)}
 .nw-art{position:relative;aspect-ratio:16/9;max-width:100%;overflow:hidden;background:radial-gradient(70% 90% at 75% 20%,rgba(154,114,255,.55),transparent 70%),linear-gradient(135deg,#3A1F8A,#160B33)}
-.nw-art img{width:100%;height:100%;object-fit:cover;object-position:center 72%;display:block}
+.nw-art img{width:100%;height:100%;object-fit:cover;display:block}
+/* Resimli haber: resim kırpılmadan tamamı görünür (dikey resimde yanlar koyu kalır) */
+.nw-art.has-img{aspect-ratio:auto;background:#09060F;display:flex;justify-content:center;align-items:center}
+.nw-art.has-img img{width:auto;max-width:100%;height:auto;max-height:440px;object-fit:contain}
+.news-side .nw-art.has-img img{max-height:150px}
 .nw-art .wm{position:absolute;right:-6%;bottom:-18%;width:46%;opacity:.16}
 .nw-art .wm svg{width:100%;height:auto;display:block}
 .nw-tag{position:absolute;left:14px;top:14px;font:600 .62rem var(--f-body);letter-spacing:.18em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:var(--gold);color:#1B1033}
@@ -295,7 +299,7 @@ section.block{padding-block:104px 0}
 .nw-text{margin:0;color:var(--muted);font-size:.92rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .news-lead .nw-title{font-size:clamp(1.5rem,3vw,2.1rem)}
 .news-lead .nw-text{-webkit-line-clamp:3;font-size:1rem}
-.news-lead .nw-art{aspect-ratio:16/10}
+.news-lead .nw-art:not(.has-img){aspect-ratio:16/10}
 .news-side .nw{flex-direction:row}
 .news-side .nw-art{aspect-ratio:auto;width:120px;flex:none}
 .news-side .nw-art .wm{width:80%;right:-20%;bottom:-10%}
@@ -315,6 +319,25 @@ section.block{padding-block:104px 0}
 .nd-meta span{padding:4px 9px;border-radius:999px;background:var(--gold);color:#1B1033}
 .nd h3{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.05}
 .nd-text{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;color:var(--text)}
+
+/* Tablodan gelen fikstür, ağaç ve galeri */
+.fix-row .sc{font:italic 800 1.05rem var(--f-display);letter-spacing:0;color:var(--text)}
+.res{display:inline-grid;place-items:center;width:24px;height:24px;margin-left:8px;border-radius:6px;font:700 .72rem var(--f-body);letter-spacing:0;color:#FFFFFF;vertical-align:middle}
+.res.G{background:#2E9E5B}.res.B{background:#B98A1E}.res.M{background:#C8343C}
+.m div.us{background:rgba(91,35,216,.35);color:#FFFFFF}
+.m div.win span{color:var(--text);font-weight:700}
+.m div.win span:last-child{color:var(--gold)}
+.gallery{grid-auto-flow:dense}
+/* Fotoğraflar kırpılmaz: sütunlara dizilir, her biri kendi en-boy oranında */
+.gallery.masonry{display:block;columns:3 240px;column-gap:14px}
+.gp{position:relative;display:block;width:100%;margin:0 0 14px;break-inside:avoid;border-radius:16px;overflow:hidden;border:1px solid var(--line);padding:0;cursor:zoom-in;background:var(--panel);font:inherit}
+.gp img{width:100%;height:auto;display:block;transition:transform .4s}
+.gp:hover img{transform:scale(1.04)}
+.gp span{position:absolute;left:0;right:0;bottom:0;padding:28px 14px 12px;background:linear-gradient(transparent,rgba(9,4,22,.88));color:#FFFFFF;font-size:.86rem;text-align:left}
+.gd-dlg{width:min(980px,calc(100vw - 24px));background:#09060F}
+.gd{position:relative;display:grid;gap:12px;padding:16px}
+.gd img{display:block;max-width:100%;max-height:74vh;margin-inline:auto;border-radius:10px}
+.gd-cap{margin:0;text-align:center;color:var(--muted)}
 
 /* Yorumlar */
 .comments{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:24px;align-items:start}
@@ -645,14 +668,14 @@ body:has(dialog[open]){overflow:hidden}
     </div>
     <div class="group">
       <div class="panel">
-        <h3 class="display">4 takımlı grup</h3>
+        <h3 class="display" id="groupTitle">4 takımlı grup</h3>
         <ul class="slots" id="groupSlots"></ul>
-        <p class="note">Kura çekilince rakipler buraya yazılacak.</p>
+        <p class="note" id="groupNote">Kura çekilince rakipler buraya yazılacak.</p>
       </div>
       <div class="panel">
         <h3 class="display">Grup maçları</h3>
         <div class="fix" id="fixture"></div>
-        <p class="note">Fikstür henüz belirlenmedi.</p>
+        <p class="note" id="fixNote">Fikstür henüz belirlenmedi.</p>
       </div>
     </div>
   </section>
@@ -673,7 +696,7 @@ body:has(dialog[open]){overflow:hidden}
   <section class="block wrap" id="galeri">
     <div class="sh">
       <div>
-        <div class="kicker label">Fotoğraflar eklenecek</div>
+        <div class="kicker label" id="galKicker">Fotoğraflar eklenecek</div>
         <h2 class="display">Galeri</h2>
       </div>
     </div>
@@ -765,6 +788,15 @@ body:has(dialog[open]){overflow:hidden}
       <button type="button" class="btn btn-primary" data-close>Kapat</button>
       <button type="button" class="btn btn-ghost" id="kdNext">Sonraki →</button>
     </div>
+  </div>
+</dialog>
+
+<dialog class="pd-dlg gd-dlg" id="gd" aria-label="Fotoğraf">
+  <div class="gd">
+    <button type="button" class="pd-x" data-close aria-label="Kapat">×</button>
+    <img id="gdImg" alt="">
+    <p class="gd-cap" id="gdCap"></p>
+    <div class="pd-nav"><button type="button" class="btn btn-ghost" id="gdPrev">← Önceki</button><button type="button" class="btn btn-primary" data-close>Kapat</button><button type="button" class="btn btn-ghost" id="gdNext">Sonraki →</button></div>
   </div>
 </dialog>
 
@@ -1319,6 +1351,12 @@ async function loadWall() {
       stats = Object.fromEntries(d.istatistik.filter(s => s.no in byNo).map(s => [s.no, { gol: +s.gol || 0, asist: +s.asist || 0 }]));
       renderStats(); renderCards();
     }
+    if (Array.isArray(d.gruplar)) groups = d.gruplar.filter(g => g && Array.isArray(g.takimlar));
+    if (Array.isArray(d.fikstur)) fixtures = d.fikstur.filter(f => f && (f.rakip || f.tarih));
+    if (Array.isArray(d.eslesmeler)) koMatches = d.eslesmeler;
+    if (Array.isArray(d.galeri)) galleryItems = d.galeri.filter(g => g && /^https:\/\//i.test(g.resim || ''));
+    renderGroup(); renderBracket(); renderGallery();
+    startCountdown(nextFixture());
     newsOn = Array.isArray(d.haberler);
     news = newsOn ? d.haberler.filter(h => h && h.baslik) : [];
     commentsOn = Array.isArray(d.yorumlar);
@@ -1542,30 +1580,36 @@ async function shareLineup(k, btn) {
   }
 }
 
-// Sıradaki maça geri sayım (girişte)
-function startCountdown() {
-  if (!NEXT_MATCH.tarih) return;
-  const [y, m, d] = NEXT_MATCH.tarih.split('-').map(Number);
-  const [hh, mm] = (NEXT_MATCH.saat || '00:00').split(':').map(Number);
-  const target = new Date(y, m - 1, d, hh || 0, mm || 0);
-  if (isNaN(target)) return;
-  const when = target.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }) + (NEXT_MATCH.saat ? ' · ' + NEXT_MATCH.saat : '');
+// Sıradaki maça geri sayım (girişte). Maç: tablodaki Fikstur'un ilk oynanmamış maçı; yoksa NEXT_MATCH
+const STATUS_DEFAULT = $('#nextMatch').innerHTML;
+let cdTimer = null;
+const matchDate = f => {
+  const [y, m, d] = String(f.tarih).split('-').map(Number);
+  const [hh, mm] = String(f.saat || '00:00').split(':').map(Number);
+  return new Date(y, m - 1, d, hh || 0, mm || 0);
+};
+function startCountdown(match = null) {
+  const M = match || (NEXT_MATCH.tarih ? NEXT_MATCH : null);
+  clearInterval(cdTimer);
   const el = $('#nextMatch');
+  const target = M ? matchDate(M) : null;
+  if (!target || isNaN(target)) { el.className = 'status'; el.innerHTML = STATUS_DEFAULT; return; }
+  const when = target.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }) + (M.saat ? ' · ' + M.saat : '');
   el.className = 'countdown';
   el.innerHTML = `<div class="cd-h"><span class="label">Sıradaki maç</span><span class="label" style="color:var(--muted)">${esc(when)}</span></div>
-    <b class="display" style="font-size:1.3rem">${esc(TEAM.name)} – ${esc(NEXT_MATCH.rakip || 'Rakip belli değil')}</b>
+    <b class="display" style="font-size:1.3rem">${esc(TEAM.name)} – ${esc(M.rakip || 'Rakip belli değil')}</b>
     <div class="cd-row" id="cdRow"></div>`;
   const units = [['gün', 864e5], ['saat', 36e5], ['dakika', 6e4], ['saniye', 1e3]];
   const tick = () => {
     const left = target - Date.now();
     if (left <= 0) {
       $('#cdRow').outerHTML = `<div class="cd-live" id="cdRow">${left > -3 * 36e5 ? 'Maç günü!' : 'Maç oynandı'}</div>`;
-      clearInterval(timer); return;
+      clearInterval(cdTimer); return;
     }
     let rest = left;
     $('#cdRow').innerHTML = units.map(([u, ms]) => { const v = Math.floor(rest / ms); rest -= v * ms; return `<div><b>${String(v).padStart(2, '0')}</b><span>${u}</span></div>`; }).join('');
   };
-  const timer = setInterval(tick, 1000);
+  cdTimer = setInterval(tick, 1000);
   tick();
 }
 // Yorumlar (en altta): aynı Google tablosundaki "Yorumlar" sayfasından gelir
@@ -1629,7 +1673,7 @@ const newsArt = h => (/^https:\/\//i.test(h.resim || '')
   ? `<img src="${esc(h.resim)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
   : `<span class="wm" aria-hidden="true">${crestSvg()}</span>`) + (h.etiket ? `<span class="nw-tag">${esc(h.etiket)}</span>` : '');
 const newsCard = (h, i, lead) => `<button type="button" class="nw${lead ? ' news-lead' : ''}" data-news="${i}">
-  <span class="nw-art">${newsArt(h)}</span>
+  <span class="nw-art${/^https:\/\//i.test(h.resim || '') ? ' has-img' : ''}">${newsArt(h)}</span>
   <span class="nw-body"><span class="nw-date">${esc(fmtDay(h.tarih))}</span>
   <span class="nw-title">${esc(h.baslik)}</span>${h.metin ? `<span class="nw-text">${esc(h.metin)}</span>` : ''}</span></button>`;
 function renderNews() {
@@ -1684,39 +1728,119 @@ $('#picker').addEventListener('click', e => {
 });
 renderKit();
 
-// Grup: kura ve fikstür yer tutucuları
-$('#groupSlots').innerHTML =
-  `<li class="us">${crestSvg()}<span>${esc(TEAM.name)} · ${esc(TEAM.sinif)}</span></li>` +
-  [1, 2, 3].map(() => `<li><i>?</i><span>Kura bekleniyor</span></li>`).join('');
-$('#fixture').innerHTML = [1, 2, 3].map(n => {
-  // ilk satır, belliyse sıradaki maçı gösterir
-  const nm = n === 1 && NEXT_MATCH.tarih ? NEXT_MATCH : null;
-  const when = nm ? new Date(...nm.tarih.split('-').map((v, i) => i === 1 ? v - 1 : +v))
-    .toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + (nm.saat ? ' · ' + nm.saat : '') : 'Tarih yok';
-  return `<div class="fix-row"><span class="k">Maç ${n}</span>
-    <span class="t">${esc(TEAM.name)} <em>– ${nm && nm.rakip ? esc(nm.rakip) : 'rakip belli değil'}</em></span>
-    <span class="d">${esc(when)}</span></div>`;
-}).join('');
+// ===== Grup, fikstür, turnuva ağacı ve galeri: Google tablosundan gelir; gelmezse yer tutucular =====
+let groups = null, fixtures = null, koMatches = null, galleryItems = null;
+const isUs = s => /^(142\s*c|10\s*[-/ ]?\s*c)$/i.test(String(s || '').trim()); // tabloda 142C ya da 10-C yazılabilir
+const teamName = t => (isUs(t) ? TEAM.name : t);
+const fmtShort = f => matchDate(f).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + (f.saat ? ' · ' + f.saat : '');
+const trophy = `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M15 6h18v12a9 9 0 0 1-18 0Z"/><path d="M15 10H8v4a7 7 0 0 0 7 7M33 10h7v4a7 7 0 0 1-7 7"/><path d="M24 27v8M17 42h14l-2-7H19Z"/></svg>`;
+const camIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.6"/><path d="M8.5 6 10 3.8h4L15.5 6"/></svg>`;
+
+// En yakın oynanmamış grup maçı (geri sayım için)
+function nextFixture() {
+  const now = Date.now();
+  return (fixtures || [])
+    .filter(f => f.tarih && f.biz == null)
+    .map(f => ({ ...f, at: matchDate(f).getTime() }))
+    .filter(f => !isNaN(f.at) && f.at > now - 3 * 36e5)
+    .sort((a, b) => a.at - b.at)[0] || null;
+}
+
+// Grubumuz: 142C'nin bulunduğu grup ve grup maçları
+function renderGroup() {
+  const mine = (groups || []).find(g => g.takimlar.some(isUs));
+  const teams = mine ? mine.takimlar.slice(0, 4) : [TEAM.name];
+  while (teams.length < 4) teams.push('');
+  $('#groupTitle').textContent = mine ? mine.ad : '4 takımlı grup';
+  $('#groupSlots').innerHTML = teams.map(t =>
+    !t ? `<li><i>?</i><span>Kura bekleniyor</span></li>`
+      : isUs(t) ? `<li class="us">${crestSvg()}<span>${esc(TEAM.name)} · ${esc(TEAM.sinif)}</span></li>`
+      : `<li><i>·</i><span>${esc(t)}</span></li>`).join('');
+  $('#groupNote').hidden = teams.every(Boolean);
+
+  const rows = fixtures && fixtures.length ? fixtures : null;
+  $('#fixNote').hidden = !!rows;
+  $('#fixture').innerHTML = (rows || [null, null, null]).map((f, i) => {
+    if (!f) { // yer tutucu: ilk satır, belliyse NEXT_MATCH'i gösterir
+      const nm = i === 0 && NEXT_MATCH.tarih ? NEXT_MATCH : null;
+      return `<div class="fix-row"><span class="k">Maç ${i + 1}</span>
+        <span class="t">${esc(TEAM.name)} <em>– ${nm && nm.rakip ? esc(nm.rakip) : 'rakip belli değil'}</em></span>
+        <span class="d">${nm ? esc(fmtShort(nm)) : 'Tarih yok'}</span></div>`;
+    }
+    const played = f.biz != null && f.onlar != null;
+    const res = played ? (f.biz > f.onlar ? 'G' : f.biz < f.onlar ? 'M' : 'B') : '';
+    return `<div class="fix-row"><span class="k">Maç ${i + 1}</span>
+      <span class="t">${esc(TEAM.name)} <em>– ${esc(f.rakip || 'rakip belli değil')}</em></span>
+      <span class="d">${played ? `<b class="sc">${f.biz} – ${f.onlar}</b><i class="res ${res}" title="${{ G: 'Galibiyet', B: 'Beraberlik', M: 'Mağlubiyet' }[res]}">${res}</i>` : esc(f.tarih ? fmtShort(f) : 'Tarih yok')}</span></div>`;
+  }).join('');
+}
 
 // Turnuva ağacı: gruplar → çeyrek final → yarı final → final → şampiyon
-const box = () => `<div class="m"><div><span>Belli değil</span><span>–</span></div><div><span>Belli değil</span><span>–</span></div></div>`;
-const trophy = `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M15 6h18v12a9 9 0 0 1-18 0Z"/><path d="M15 10H8v4a7 7 0 0 0 7 7M33 10h7v4a7 7 0 0 1-7 7"/><path d="M24 27v8M17 42h14l-2-7H19Z"/></svg>`;
-const grp = n => `<div class="grp"><h5>Grup ${n}</h5>${[0, 1, 2, 3].map(i =>
-  n === 1 && i === 0 ? `<div class="us">${esc(TEAM.name)}</div>` : `<div>Belli değil</div>`).join('')}</div>`;
-$('#bracket').innerHTML = `
-  <div class="rnd"><h4>Gruplar</h4><div class="rnd-body">${[1, 2, 3, 4].map(grp).join('')}</div></div>
-  <div class="rnd"><h4>Çeyrek final</h4><div class="rnd-body">
-    <div class="pair">${box()}${box()}</div><div class="pair">${box()}${box()}</div></div></div>
-  <div class="rnd"><h4>Yarı final</h4><div class="rnd-body">
-    <div class="pair">${box()}${box()}</div></div></div>
-  <div class="rnd final"><h4>Final</h4><div class="rnd-body">${box()}</div></div>
-  <div class="rnd"><h4>Şampiyon</h4><div class="rnd-body">
-    <div class="champ">${trophy}<b>?</b><span>Kupa sahibini bekliyor</span></div></div></div>`;
+function renderBracket() {
+  const gs = groups && groups.length ? groups.slice(0, 4) : null;
+  const grp = (g, n) => {
+    const ts = g ? g.takimlar.slice(0, 4) : (gs ? [] : (n === 0 ? [TEAM.name] : []));
+    while (ts.length < 4) ts.push('');
+    return `<div class="grp"><h5>${esc(g ? g.ad : 'Grup ' + (n + 1))}</h5>${ts.map(t =>
+      t ? `<div${isUs(t) ? ' class="us"' : ''}>${esc(teamName(t))}</div>` : '<div>Belli değil</div>').join('')}</div>`;
+  };
+  const ko = koMatches || [];
+  const tur = re => ko.filter(m => re.test(m.tur));
+  const qf = tur(/^(ç|c)eyrek/i), sf = tur(/^yar(ı|i)/i), fin = tur(/^final/i)[0];
+  const box = m => {
+    m = m || {};
+    const done = m.g1 != null && m.g2 != null;
+    const row = (t, g, win) => `<div class="${[win ? 'win' : '', isUs(t) ? 'us' : ''].join(' ').trim()}"><span>${esc(t ? teamName(t) : 'Belli değil')}</span><span>${g != null ? g : '–'}</span></div>`;
+    return `<div class="m">${row(m.t1, m.g1, done && m.g1 > m.g2)}${row(m.t2, m.g2, done && m.g2 > m.g1)}</div>`;
+  };
+  const champ = fin && fin.g1 != null && fin.g2 != null && fin.g1 !== fin.g2 ? (fin.g1 > fin.g2 ? fin.t1 : fin.t2) : '';
+  $('#bracket').innerHTML = `
+    <div class="rnd"><h4>Gruplar</h4><div class="rnd-body">${[0, 1, 2, 3].map(i => grp(gs ? gs[i] : null, i)).join('')}</div></div>
+    <div class="rnd"><h4>Çeyrek final</h4><div class="rnd-body">
+      <div class="pair">${box(qf[0])}${box(qf[1])}</div><div class="pair">${box(qf[2])}${box(qf[3])}</div></div></div>
+    <div class="rnd"><h4>Yarı final</h4><div class="rnd-body">
+      <div class="pair">${box(sf[0])}${box(sf[1])}</div></div></div>
+    <div class="rnd final"><h4>Final</h4><div class="rnd-body">${box(fin)}</div></div>
+    <div class="rnd"><h4>Şampiyon</h4><div class="rnd-body">
+      <div class="champ">${trophy}<b>${champ ? esc(teamName(champ)) : '?'}</b><span>${champ ? 'Turnuva şampiyonu' : 'Kupa sahibini bekliyor'}</span></div></div></div>`;
+}
 
-// Galeri: fotoğraflar gelene kadar boş kareler (ilki geniş)
-const camIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.6"/><path d="M8.5 6 10 3.8h4L15.5 6"/></svg>`;
-$("#gallery").innerHTML = [true, false, false, false, false].map(wide =>
-  `<div class="ph${wide ? " wide" : ""}" role="img" aria-label="Fotoğraf eklenecek">${camIcon}</div>`).join("");
+// Galeri: tablodaki fotoğraflar (ilki geniş); yoksa boş kareler
+let gdIdx = 0;
+function renderGallery() {
+  const items = galleryItems || [];
+  $('#galKicker').textContent = items.length ? `${items.length} fotoğraf` : 'Fotoğraflar eklenecek';
+  $('#gallery').classList.toggle('masonry', items.length > 0);
+  $('#gallery').innerHTML = items.length
+    ? items.map((g, i) => `<button type="button" class="gp" data-gal="${i}">
+        <img src="${esc(g.resim)}" alt="${esc(g.aciklama || 'Galeri fotoğrafı')}" loading="lazy" referrerpolicy="no-referrer">
+        ${g.aciklama ? `<span>${esc(g.aciklama)}</span>` : ''}</button>`).join('')
+    : [true, false, false, false, false].map(wide =>
+        `<div class="ph${wide ? ' wide' : ''}" role="img" aria-label="Fotoğraf eklenecek">${camIcon}</div>`).join('');
+}
+const gd = $('#gd');
+function renderGd() {
+  const g = (galleryItems || [])[gdIdx]; if (!g) return;
+  $('#gdImg').src = g.resim;
+  $('#gdImg').alt = g.aciklama || 'Galeri fotoğrafı';
+  $('#gdCap').textContent = g.aciklama || '';
+  $('#gdCap').hidden = !g.aciklama;
+  $('#gdPrev').disabled = $('#gdNext').disabled = galleryItems.length < 2;
+}
+const gdStep = d => { gdIdx = (gdIdx + d + galleryItems.length) % galleryItems.length; renderGd(); };
+$('#gallery').addEventListener('click', e => {
+  const b = e.target.closest('[data-gal]'); if (!b) return;
+  gdIdx = Number(b.dataset.gal); renderGd();
+  if (!gd.open) gd.showModal();
+});
+gd.addEventListener('click', e => { if (e.target === gd || e.target.closest('[data-close]')) gd.close(); });
+$('#gdPrev').addEventListener('click', () => gdStep(-1));
+$('#gdNext').addEventListener('click', () => gdStep(1));
+gd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') gdStep(-1); if (e.key === 'ArrowRight') gdStep(1); });
+
+renderGroup();
+renderBracket();
+renderGallery();
 </script>
 
 </body>
