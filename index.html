@@ -53,7 +53,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgroun
 .brand svg{width:24px;height:auto;display:block;flex:none}
 .brand b{display:block;font:italic 800 1.25rem/1 var(--f-display);font-stretch:125%;letter-spacing:.01em}
 .brand small{display:block;margin-top:3px;font:600 .62rem/1 var(--f-body);font-stretch:75%;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
-nav.menu{display:flex;gap:2px;margin-left:auto;overflow-x:auto;max-width:100%;scrollbar-width:none}
+nav.menu{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px;margin-left:auto;max-width:100%}
 nav.menu a{position:relative;font:600 .76rem var(--f-body);font-stretch:80%;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;padding:8px 12px;white-space:nowrap;color:var(--muted);transition:color .2s}
 nav.menu a::after{content:"";position:absolute;left:12px;right:12px;bottom:2px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .25s}
 nav.menu a:hover{color:var(--text)}
@@ -479,7 +479,9 @@ body:has(dialog[open]){overflow:hidden}
   .hero .wrap{grid-template-columns:minmax(0,1fr);padding-block:44px 48px}
   .hero-kit{width:min(300px,82%)}
   .hero h1{font-size:min(21vw,9rem)}
-  nav.menu{margin-left:0;width:100%;order:3}
+  nav.menu{margin-left:0;width:100%;order:3;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
+  nav.menu.end{-webkit-mask-image:none;mask-image:none}
+  nav.menu::-webkit-scrollbar{display:none}
   .draft{margin-left:auto}
   html{scroll-padding-top:120px}
   section.block{padding-top:80px}
@@ -626,7 +628,7 @@ body:has(dialog[open]){overflow:hidden}
           <div class="b-list" id="bList" role="group" aria-label="Oyuncu seç"></div>
         </div>
         <div class="panel b-send">
-          <div class="field"><label for="bName">Not</label><input id="bName" maxlength="80" placeholder="Kadrona bir not ekle (isteğe bağlı)" autocomplete="off"></div>
+          <div class="field"><label for="bName">Not</label><input id="bName" maxlength="80" placeholder="Kadrona bir not yaz" required autocomplete="off"></div>
           <button type="button" class="btn btn-primary" id="bSend" disabled>Kadromu gönder</button>
           <p class="b-msg" id="bMsg" aria-live="polite"></p>
           <button type="button" class="btn btn-ghost" id="bShot" hidden>Kadronu resim olarak indir</button>
@@ -861,7 +863,7 @@ const players = [
   { ad: 'Fatih',   adSoyad: 'Fatih Köroğlu',            no: 18, hat: 'OS', mevki: 'Orta saha' },
   { ad: 'Özten',   adSoyad: 'Efe Özten',                no: 7,  hat: 'OS', mevki: 'Orta saha' },
   { ad: 'Kerem',   adSoyad: 'Kerem Emir Talip',         no: 17, hat: 'OS', mevki: 'Orta saha' },
-  { ad: 'Muro',    adSoyad: 'Murahtan Mollamehmetoğlu', no: 9,  hat: 'HC', mevki: 'Forvet' },
+  { ad: 'Muro',    adSoyad: 'Murathan Mollamehmetoğlu', no: 9,  hat: 'HC', mevki: 'Forvet' },
   { ad: 'Batuhan', adSoyad: 'Batuhan Verep',            no: 1,  hat: 'KL', mevki: 'Kaleci' },
 ];
 // İlk 9: forma no -> sahadaki konum (% olarak, x soldan, y yukarıdan; hücum yukarı)
@@ -1153,7 +1155,7 @@ $('#bPitch').innerHTML = PITCH_LINES;
 // Önce oyuncuya, sonra mevkiye dokunulur. bSel: seçili oyuncunun numarası.
 // Sayfa her açıldığında boş başlar (seçimler ve not saklanmaz)
 let bForm = '3-3-2', bPick = Array(9).fill(null), bSel = null, bSending = false;
-try { localStorage.removeItem('142c-kadro'); } catch {} // eski sürümün kaydettiği taslağı temizle
+try { localStorage.removeItem('142c-kadro'); localStorage.removeItem('142c-ad'); } catch {} // eski sürümlerin sakladığı taslağı ve ismi sil
 const filled = () => bPick.filter(n => n != null).length;
 const setMsg = (text, kind = '') => { $('#bMsg').textContent = text; $('#bMsg').className = 'b-msg' + (kind ? ' ' + kind : ''); };
 
@@ -1212,6 +1214,7 @@ $('#bForms').addEventListener('click', e => {
   bForm = b.dataset.form; edited();
 });
 $('#bClear').addEventListener('click', () => { bPick = Array(9).fill(null); bSel = null; edited(); });
+$('#bName').addEventListener('input', () => { if ($('#bMsg').classList.contains('err')) setMsg(''); });
 
 // Gönderilen kadro: saha kopyası yerinden kalkar, sayfa aşağı kayar, kopya yeni kartın yerine iner
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1256,7 +1259,8 @@ async function flyToWall(entry, clearBuilder) {
 
 $('#bSend').addEventListener('click', async () => {
   if (filled() !== 9 || bSending || !KADRO_API) return;
-  // "isim" alanı artık kadronun notunu taşır (tablodaki sütun adı değişmedi)
+  // "isim" alanı artık kadronun notunu taşır (tablodaki sütun adı değişmedi); not zorunlu
+  if (!$('#bName').value.trim()) { setMsg('Not yazmadan gönderemezsin.', 'err'); $('#bName').focus(); return; }
   const entry = { isim: $('#bName').value.trim().slice(0, 80), dizilis: bForm, oyuncular: [...bPick] };
   bSending = true; bSel = null; $('#bSend').textContent = 'Gönderiliyor…'; bRender();
   try {
@@ -1524,7 +1528,7 @@ function renderKdc() {
     : list.length
       ? list.map(c => `<li${c._new ? ' class="new"' : ''}><div class="cm-h"><b>${esc(c.isim || 'İsimsiz')}</b><span>${fmtTime(c.t)}</span></div><p>${esc(c.metin)}</p></li>`).join('')
       : `<li class="kdc-empty">Bu kadroya henüz yorum yapılmadı. İlk yorumu sen yaz.</li>`;
-  if (!$('#kdcName').value) $('#kdcName').value = store.get('142c-ad', '');
+  // isim hatırlanmaz: her yorumda yeniden yazılır
   $('#kdcSend').disabled = kdcSending;
 }
 const paintCmt = id => document.querySelectorAll(`[data-cmt="${CSS.escape(id)}"] span`).forEach(s => { s.textContent = (kdComments[id] || []).length; });
@@ -1546,9 +1550,8 @@ $('#kdcForm').addEventListener('submit', async e => {
     const d = await r.json();
     if (!d.ok) throw new Error(d.hata || 'hata');
     store.set('142c-son-kadro-yorum', Date.now());
-    store.set('142c-ad', isim);
     (kdComments[id] = kdComments[id] || []).unshift({ kadro: id, t: Number(d.t) || Date.now(), isim, metin, _new: true });
-    $('#kdcText').value = '';
+    $('#kdcName').value = ''; $('#kdcText').value = '';
     kdcMsg('Yorumun eklendi.', 'ok');
     paintCmt(id);
   } catch {
@@ -1771,7 +1774,7 @@ $('#cForm').addEventListener('submit', async e => {
     if (!d.ok) throw new Error(d.hata || 'hata');
     store.set('142c-son-yorum', Date.now());
     comments.unshift({ id: String(d.id), t: Number(d.t) || Date.now(), isim, metin, _new: true });
-    $('#cText').value = ''; $('#cLen').textContent = '0 / 300';
+    $('#cName').value = ''; $('#cText').value = ''; $('#cLen').textContent = '0 / 300';
     cMsg('Yorumun eklendi.', 'ok');
   } catch {
     cMsg('Yorumun gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.', 'err');
@@ -1972,6 +1975,13 @@ gd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') gdStep(-1); if 
 renderGroup();
 renderBracket();
 renderGallery();
+// Telefonda menü yana kayar: sonuna gelince sağdaki solma kalkar
+const navEl = $("nav.menu");
+const navFade = () => navEl.classList.toggle("end", navEl.scrollWidth - navEl.scrollLeft - navEl.clientWidth < 4);
+navEl.addEventListener("scroll", navFade, { passive: true });
+addEventListener("resize", navFade);
+navFade();
+
 // Veriyi en son yükle: yukarıdaki bütün bölümler tanımlandıktan sonra
 loadWall();
 </script>
