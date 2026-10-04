@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,700;1,800;1,900&family=Barlow:wght@800&family=Barlow+Condensed:wght@700&family=Graduate&family=Saira+Condensed:wght@700&display=swap">
-<meta name="description" content="Trabzon Fen Lisesi 10-C sınıf takımı 142C: kadro, forma, turnuva ve taraftar kadroları.">
+<meta name="description" content="Trabzon Fen Lisesi 10-C sınıf takımı 142C: kadro, forma, turnuva ve sizin kadrolarınız.">
 <meta name="theme-color" content="#120A28">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="142C">
@@ -428,7 +428,7 @@ body:has(dialog[open]){overflow:hidden}
       <a href="#kadro">Kadro</a>
       <a href="#istatistik">Krallık</a>
       <a href="#kur">Kadronu kur</a>
-      <a href="#taraftar">Sizin kadrolarınız</a>
+      <a href="#kadrolariniz">Sizin kadrolarınız</a>
       <a href="#forma">Forma</a>
       <a href="#grup">Grup</a>
       <a href="#agac">Turnuva ağacı</a>
@@ -534,7 +534,7 @@ body:has(dialog[open]){overflow:hidden}
     </div>
   </section>
 
-  <section class="block wrap" id="taraftar">
+  <section class="block wrap" id="kadrolariniz">
     <div class="sh">
       <div>
         <div class="kicker label" id="wCount">Herkese açık</div>
@@ -631,14 +631,14 @@ body:has(dialog[open]){overflow:hidden}
   <section class="block wrap" id="yorumlar">
     <div class="sh">
       <div>
-        <div class="kicker label" id="cCount">Taraftar köşesi</div>
+        <div class="kicker label" id="cCount">Söz sizde</div>
         <h2 class="display">Yorumlar</h2>
         <p>Takıma bir mesaj bırak. Yorumlar herkese açık görünür.</p>
       </div>
     </div>
     <div class="comments">
       <form class="panel c-form" id="cForm" novalidate>
-        <div class="field"><label for="cName">Adın</label><input id="cName" maxlength="30" placeholder="İsteğe bağlı" autocomplete="off"></div>
+        <div class="field"><label for="cName">Adın</label><input id="cName" maxlength="30" placeholder="Adını yaz" autocomplete="off" required></div>
         <div class="field"><label for="cText">Yorumun</label><textarea id="cText" maxlength="300" rows="4" placeholder="Forza 142C!"></textarea></div>
         <div class="c-foot"><span class="c-len" id="cLen">0 / 300</span><button type="submit" class="btn btn-primary" id="cSend">Gönder</button></div>
         <p class="b-msg" id="cMsg" aria-live="polite"></p>
@@ -1099,7 +1099,7 @@ async function flyToWall(entry, clearBuilder) {
   const card = $('#wall .wc');
   if (reduceMotion() || !card) {
     clearBuilder();
-    $('#taraftar').scrollIntoView({ block: 'start' });
+    $('#kadrolariniz').scrollIntoView({ block: 'start' });
     card?.classList.add('new');
     return;
   }
@@ -1108,7 +1108,7 @@ async function flyToWall(entry, clearBuilder) {
   clearBuilder();
   const lift = 'translateY(-14px) scale(1.03)';
   ghost.animate([{ transform: 'none' }, { transform: lift }], { duration: 260, easing: 'ease-out', fill: 'forwards' });
-  $('#taraftar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('#kadrolariniz').scrollIntoView({ behavior: 'smooth', block: 'start' });
   await waitScroll();
   const t = card.querySelector('.mini').getBoundingClientRect();
   const dx = t.left - r.left, dy = t.top - r.top, s = t.width / r.width;
@@ -1210,7 +1210,7 @@ function wallCard(k, i, fav) {
     <span class="wc-h"><b>${esc(k.dizilis)}</b><span>${fmtTime(k.t)}</span></span>
     <span class="mini">${PITCH_LINES}${miniDots(k, p => p.ad)}</span>
     ${note ? `<span class="wc-note">${esc(note)}</span>` : ''}
-    <span class="wc-f">${heartBtn(k)}${isFav ? '<span class="fav-badge">Taraftarın favorisi</span>' : ''}</span>
+    <span class="wc-f">${heartBtn(k)}${isFav ? '<span class="fav-badge">En çok beğenilen</span>' : ''}</span>
   </div>`;
 }
 function renderWall() {
@@ -1506,13 +1506,13 @@ let comments = [], commentsOn = false, cShown = 20, cSending = false;
 const C_WAIT = 30e3; // aynı tarayıcıdan iki yorum arası en az 30 sn
 function renderComments() {
   const n = comments.length;
-  $('#cCount').textContent = n ? `${n} yorum` : 'Taraftar köşesi';
+  $('#cCount').textContent = n ? `${n} yorum` : 'Söz sizde';
   const ready = KADRO_API && commentsOn;
   $('#cForm').querySelectorAll('input,textarea,button').forEach(el => { el.disabled = !ready || (el.id === 'cSend' && cSending); });
   let html;
   if (n) {
     html = comments.slice(0, cShown).map(c => {
-      const name = String(c.isim || '').trim() || 'İsimsiz taraftar';
+      const name = String(c.isim || '').trim() || 'İsimsiz';
       return `<li class="cm${c._new ? ' new' : ''}"><span class="cm-av" aria-hidden="true">${esc(upper(name.charAt(0)))}</span>
         <div class="cm-h"><b>${esc(name)}</b><span>${fmtTime(c.t)}</span></div><p>${esc(c.metin)}</p></li>`;
     }).join('');
@@ -1525,11 +1525,13 @@ function renderComments() {
 }
 const cMsg = (text, kind = '') => { $('#cMsg').textContent = text; $('#cMsg').className = 'b-msg' + (kind ? ' ' + kind : ''); };
 $('#cText').addEventListener('input', () => { $('#cLen').textContent = `${$('#cText').value.length} / 300`; cMsg(''); });
+$('#cName').addEventListener('input', () => cMsg(''));
 $('#cMore').addEventListener('click', () => { cShown += 20; renderComments(); });
 $('#cForm').addEventListener('submit', async e => {
   e.preventDefault();
   if (!KADRO_API || !commentsOn || cSending) return;
   const metin = $('#cText').value.trim();
+  if (!$('#cName').value.trim()) { cMsg('Adını yazmadan gönderemezsin.', 'err'); $('#cName').focus(); return; }
   if (metin.length < 2) { cMsg('Yorum yazmadan gönderemezsin.', 'err'); $('#cText').focus(); return; }
   const wait = C_WAIT - (Date.now() - store.get('142c-son-yorum', 0));
   if (wait > 0) { cMsg(`Yeni yorum için ${Math.ceil(wait / 1000)} saniye bekle.`, 'err'); return; }
