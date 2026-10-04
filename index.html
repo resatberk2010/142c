@@ -381,7 +381,6 @@ section.block{padding-block:104px 0}
 .grp div{padding:6px 12px;font-size:.84rem;color:var(--dim)}
 .grp div + div{border-top:1px solid var(--line)}
 .grp .us{color:#FFFFFF;font-weight:700;background:rgba(91,35,216,.45)}
-.grp::after{content:"";position:absolute;right:-29px;top:50%;width:28px;border-top:1px solid var(--line-2)}
 .pair{flex:1;display:flex;flex-direction:column;justify-content:space-around;position:relative}
 .pair::after{content:"";position:absolute;right:-14px;top:25%;bottom:25%;width:14px;border:1px solid var(--line-2);border-left:0;border-radius:0 8px 8px 0}
 .pair::before{content:"";position:absolute;right:-28px;top:50%;width:14px;border-top:1px solid var(--line-2)}
@@ -1786,7 +1785,21 @@ function renderBracket() {
   };
   const ko = koMatches || [];
   const tur = re => ko.filter(m => re.test(m.tur));
-  const qf = tur(/^(ç|c)eyrek/i), sf = tur(/^yar(ı|i)/i), fin = tur(/^final/i)[0];
+  const qfRows = tur(/^(ç|c)eyrek/i), sf = tur(/^yar(ı|i)/i), fin = tur(/^final/i)[0];
+  // Eşleşmeler sabit değil: çeyrek finaller, kazananları hangi yarı finalde buluşuyorsa
+  // o yarı finalin yanına dizilir (tabloda yarı finale yazılan takımlara bakılır)
+  const norm = s => (isUs(s) ? '142c' : String(s || '').trim().toLocaleLowerCase('tr-TR'));
+  const teamsOf = m => (m ? [m.t1, m.t2].filter(Boolean).map(norm) : []);
+  const used = new Set();
+  const feeds = [0, 1].map(j => {
+    const want = teamsOf(sf[j]);
+    const picks = [0, 1, 2, 3].filter(i => !used.has(i) && teamsOf(qfRows[i]).some(t => want.includes(t))).slice(0, 2);
+    picks.forEach(i => used.add(i));
+    return picks;
+  });
+  const rest = [0, 1, 2, 3].filter(i => !used.has(i));
+  feeds.forEach(p => { while (p.length < 2 && rest.length) p.push(rest.shift()); });
+  const qf = [...feeds[0], ...feeds[1]].map(i => qfRows[i]);
   const box = m => {
     m = m || {};
     const done = m.g1 != null && m.g2 != null;
