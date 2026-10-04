@@ -1352,7 +1352,8 @@ function applyData(d) {
   if (Array.isArray(d.eslesmeler)) koMatches = d.eslesmeler;
   if (Array.isArray(d.galeri)) galleryItems = d.galeri.filter(g => g && /^https:\/\//i.test(g.resim || ''));
   newsOn = Array.isArray(d.haberler);
-  news = newsOn ? d.haberler.filter(h => h && h.baslik) : [];
+  // 30 günden eski haberler gösterilmez (Google tarafı da onları tablodan siler)
+  news = newsOn ? d.haberler.filter(h => h && h.baslik && !(h.tarih && Date.now() - h.tarih > 30 * 864e5)) : [];
   commentsOn = Array.isArray(d.yorumlar);
   comments = commentsOn ? d.yorumlar.filter(c => c && c.metin) : [];
   dataReady = true;
