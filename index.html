@@ -1335,38 +1335,56 @@ function renderWall() {
   $('#wRefresh').hidden = !KADRO_API;
   $('#wSort').hidden = !likesOn;
 }
+// Google'dan gelen veriyi sayfaya uygular (hem hafızadaki eski kopya hem de yeni gelen veri için)
+const DATA_KEY = '142c-veri';
+let dataReady = false; // en az bir kez veri (hafızadan ya da Google'dan) geldi mi
+const loadingNow = () => !!KADRO_API && !dataReady && wState !== 'error'; // ilk açılışta veri gelene kadar "Yükleniyor…"
+function applyData(d) {
+  wall = d.kadrolar.filter(validEntry);
+  likesOn = !!d.begeniler && typeof d.begeniler === 'object';
+  likes = likesOn ? d.begeniler : {};
+  if (!likesOn) wSort = 'new';
+  if (Array.isArray(d.istatistik)) {
+    stats = Object.fromEntries(d.istatistik.filter(s => s.no in byNo).map(s => [s.no, { gol: +s.gol || 0, asist: +s.asist || 0 }]));
+  }
+  if (Array.isArray(d.gruplar)) groups = d.gruplar.filter(g => g && Array.isArray(g.takimlar));
+  if (Array.isArray(d.fikstur)) fixtures = d.fikstur.filter(f => f && (f.rakip || f.tarih));
+  if (Array.isArray(d.eslesmeler)) koMatches = d.eslesmeler;
+  if (Array.isArray(d.galeri)) galleryItems = d.galeri.filter(g => g && /^https:\/\//i.test(g.resim || ''));
+  newsOn = Array.isArray(d.haberler);
+  news = newsOn ? d.haberler.filter(h => h && h.baslik) : [];
+  commentsOn = Array.isArray(d.yorumlar);
+  comments = commentsOn ? d.yorumlar.filter(c => c && c.metin) : [];
+  dataReady = true;
+  wState = 'ready';
+}
+function renderAll() {
+  renderStats(); renderCards();
+  renderGroup(); renderBracket(); renderGallery();
+  startCountdown(nextFixture());
+  renderWall(); renderComments(); renderNews();
+}
 async function loadWall() {
   if (!KADRO_API) { renderWall(); return; }
-  if (!wall.length) { wState = 'loading'; renderWall(); }
+  // 1) Hafızadaki son veriyi hemen göster (sayfa yenilenince beklemeden dolu görünür)
+  if (!dataReady) {
+    const cached = store.get(DATA_KEY, null);
+    if (cached && cached.ok && Array.isArray(cached.kadrolar)) {
+      try { applyData(JSON.parse(JSON.stringify(cached))); renderAll(); } catch { dataReady = false; }
+    }
+  }
+  if (!dataReady) { wState = 'loading'; renderAll(); }
+  // 2) Google'dan yenisini al ve sessizce güncelle
   try {
     const r = await fetch(KADRO_API);
     const d = await r.json();
     if (!d.ok || !Array.isArray(d.kadrolar)) throw new Error('bad');
-    wall = d.kadrolar.filter(validEntry);
-    likesOn = !!d.begeniler && typeof d.begeniler === 'object';
-    likes = likesOn ? d.begeniler : {};
-    if (!likesOn) wSort = 'new';
-    if (Array.isArray(d.istatistik)) {
-      stats = Object.fromEntries(d.istatistik.filter(s => s.no in byNo).map(s => [s.no, { gol: +s.gol || 0, asist: +s.asist || 0 }]));
-      renderStats(); renderCards();
-    }
-    if (Array.isArray(d.gruplar)) groups = d.gruplar.filter(g => g && Array.isArray(g.takimlar));
-    if (Array.isArray(d.fikstur)) fixtures = d.fikstur.filter(f => f && (f.rakip || f.tarih));
-    if (Array.isArray(d.eslesmeler)) koMatches = d.eslesmeler;
-    if (Array.isArray(d.galeri)) galleryItems = d.galeri.filter(g => g && /^https:\/\//i.test(g.resim || ''));
-    renderGroup(); renderBracket(); renderGallery();
-    startCountdown(nextFixture());
-    newsOn = Array.isArray(d.haberler);
-    news = newsOn ? d.haberler.filter(h => h && h.baslik) : [];
-    commentsOn = Array.isArray(d.yorumlar);
-    comments = commentsOn ? d.yorumlar.filter(c => c && c.metin) : [];
-    wState = 'ready';
+    store.set(DATA_KEY, d);
+    applyData(d);
   } catch {
-    wState = 'error';
+    if (!dataReady) wState = 'error';
   }
-  renderWall();
-  renderComments();
-  renderNews();
+  renderAll();
 }
 
 // Kalp: anında işaretlenir, sunucu sayıyı onaylar; hata olursa geri alınır
@@ -1449,7 +1467,7 @@ function renderStats() {
   const val = (p, key) => stats[p.no]?.[key] || 0;
   const scored = key => players.filter(p => val(p, key) > 0).length;
   const anyStat = scored('gol') + scored('asist') > 0;
-  document.querySelectorAll('.king-empty').forEach(e => { e.hidden = anyStat; }); // not: sadece hiç istatistik yokken
+  document.querySelectorAll('.king-empty').forEach(e => { e.hidden = anyStat || loadingNow(); }); // not: sadece hiç istatistik yokken
   const visible = Math.max(5, scored('gol'), scored('asist'));
   const list = (key, el) => {
     // eşitlikte kadrodaki sıra korunur (Evrens, Saral önde; Batuhan sonda)
@@ -1592,7 +1610,7 @@ function startCountdown(match = null) {
   clearInterval(cdTimer);
   const el = $('#nextMatch');
   const target = M ? matchDate(M) : null;
-  if (!target || isNaN(target)) { el.className = 'status'; el.innerHTML = STATUS_DEFAULT; return; }
+  if (!target || isNaN(target)) { el.className = 'status'; el.innerHTML = loadingNow() ? '<i></i>Maç bilgisi yükleniyor…' : STATUS_DEFAULT; return; }
   const when = target.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }) + (M.saat ? ' · ' + M.saat : '');
   el.className = 'countdown';
   el.innerHTML = `<div class="cd-h"><span class="label">Sıradaki maç</span><span class="label" style="color:var(--muted)">${esc(when)}</span></div>
@@ -1709,7 +1727,6 @@ $('#nMore').addEventListener('click', () => { nAll = true; renderNews(); });
 renderNews();
 
 startCountdown();
-loadWall();
 
 // Forma: oyuncu seçici (varsayılan Evrens)
 let kitNo = 10;
@@ -1752,7 +1769,7 @@ function renderGroup() {
   while (teams.length < 4) teams.push('');
   $('#groupTitle').textContent = mine ? mine.ad : '4 takımlı grup';
   $('#groupSlots').innerHTML = teams.map(t =>
-    !t ? `<li><i>?</i><span>Kura bekleniyor</span></li>`
+    !t ? `<li><i>?</i><span>${loadingNow() ? 'Yükleniyor…' : 'Kura bekleniyor'}</span></li>`
       : isUs(t) ? `<li class="us">${crestSvg()}<span>${esc(TEAM.name)} · ${esc(TEAM.sinif)}</span></li>`
       : `<li><i>·</i><span>${esc(t)}</span></li>`).join('');
   $('#groupNote').hidden = teams.every(Boolean);
@@ -1763,8 +1780,8 @@ function renderGroup() {
     if (!f) { // yer tutucu: ilk satır, belliyse NEXT_MATCH'i gösterir
       const nm = i === 0 && NEXT_MATCH.tarih ? NEXT_MATCH : null;
       return `<div class="fix-row"><span class="k">Maç ${i + 1}</span>
-        <span class="t">${esc(TEAM.name)} <em>– ${nm && nm.rakip ? esc(nm.rakip) : 'rakip belli değil'}</em></span>
-        <span class="d">${nm ? esc(fmtShort(nm)) : 'Tarih yok'}</span></div>`;
+        <span class="t">${esc(TEAM.name)} <em>– ${nm && nm.rakip ? esc(nm.rakip) : (loadingNow() ? 'yükleniyor…' : 'rakip belli değil')}</em></span>
+        <span class="d">${nm ? esc(fmtShort(nm)) : (loadingNow() ? '' : 'Tarih yok')}</span></div>`;
     }
     const played = f.biz != null && f.onlar != null;
     const res = played ? (f.biz > f.onlar ? 'G' : f.biz < f.onlar ? 'M' : 'B') : '';
@@ -1781,7 +1798,7 @@ function renderBracket() {
     const ts = g ? g.takimlar.slice(0, 4) : (gs ? [] : (n === 0 ? [TEAM.name] : []));
     while (ts.length < 4) ts.push('');
     return `<div class="grp"><h5>${esc(g ? g.ad : 'Grup ' + (n + 1))}</h5>${ts.map(t =>
-      t ? `<div${isUs(t) ? ' class="us"' : ''}>${esc(teamName(t))}</div>` : '<div>Belli değil</div>').join('')}</div>`;
+      t ? `<div${isUs(t) ? ' class="us"' : ''}>${esc(teamName(t))}</div>` : `<div>${loadingNow() ? 'Yükleniyor…' : 'Belli değil'}</div>`).join('')}</div>`;
   };
   const ko = koMatches || [];
   const tur = re => ko.filter(m => re.test(m.tur));
@@ -1803,7 +1820,7 @@ function renderBracket() {
   const box = m => {
     m = m || {};
     const done = m.g1 != null && m.g2 != null;
-    const row = (t, g, win) => `<div class="${[win ? 'win' : '', isUs(t) ? 'us' : ''].join(' ').trim()}"><span>${esc(t ? teamName(t) : 'Belli değil')}</span><span>${g != null ? g : '–'}</span></div>`;
+    const row = (t, g, win) => `<div class="${[win ? 'win' : '', isUs(t) ? 'us' : ''].join(' ').trim()}"><span>${esc(t ? teamName(t) : (loadingNow() ? 'Yükleniyor…' : 'Belli değil'))}</span><span>${g != null ? g : '–'}</span></div>`;
     return `<div class="m">${row(m.t1, m.g1, done && m.g1 > m.g2)}${row(m.t2, m.g2, done && m.g2 > m.g1)}</div>`;
   };
   const champ = fin && fin.g1 != null && fin.g2 != null && fin.g1 !== fin.g2 ? (fin.g1 > fin.g2 ? fin.t1 : fin.t2) : '';
@@ -1854,6 +1871,8 @@ gd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') gdStep(-1); if 
 renderGroup();
 renderBracket();
 renderGallery();
+// Veriyi en son yükle: yukarıdaki bütün bölümler tanımlandıktan sonra
+loadWall();
 </script>
 
 </body>
